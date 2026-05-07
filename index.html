@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Titan Crew – log workouts, track PRs, cardio and body stats.">
+    <meta name="theme-color" content="#a78bfa">
+    <title>Titan Crew</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/x-icon" href="favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/tabs.css">
+    <link rel="stylesheet" href="css/workout.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <style>
+        /* ══ VAULT TAB — full redesign ══ */
+
+        /* Background */
+        .tab-bg--vault{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+        @keyframes vFloat{0%,100%{transform:scale(1) translate(0,0);opacity:.7}50%{transform:scale(1.13) translate(12px,-16px);opacity:1}}
+        .tbg-v-nebula{position:absolute;border-radius:50%;filter:blur(90px);animation:vFloat 9s ease-in-out infinite;}
+        .tbg-v-nebula--1{width:480px;height:480px;background:radial-gradient(circle,rgba(167,139,250,.22),transparent 70%);top:-100px;left:-120px;animation-duration:9s;}
+        .tbg-v-nebula--2{width:360px;height:360px;background:radial-gradient(circle,rgba(56,189,248,.17),transparent 70%);bottom:-50px;right:-90px;animation-delay:-4.5s;animation-duration:11s;}
+        .tbg-v-nebula--3{width:220px;height:220px;background:radial-gradient(circle,rgba(251,191,36,.13),transparent 70%);top:45%;left:55%;animation-delay:-2s;animation-duration:7s;}
+        .tbg-v-hex{position:absolute;inset:0;opacity:.038;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='52' viewBox='0 0 30 52'%3E%3Cpolygon points='15,1 29,9 29,25 15,33 1,25 1,9' fill='none' stroke='%23a78bfa' stroke-width='1'/%3E%3Cpolygon points='15,33 29,41 29,57 15,65 1,57 1,41' fill='none' stroke='%23a78bfa' stroke-width='1'/%3E%3C/svg%3E");background-size:30px 52px;}
+        .tbg-v-scanline{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(167,139,250,.015) 3px,rgba(167,139,250,.015) 4px);}
+
+        /* Hero */
+        .vault-hero{text-align:center;padding:2.2rem 0 2rem;position:relative;}
+        .vault-hero-eyebrow{font-family:var(--ff-h);font-size:.6rem;letter-spacing:.45em;color:var(--dimmed);text-transform:uppercase;margin-bottom:.6rem;}
+        @keyframes vTitleShift{from{background-position:0% 50%}to{background-position:100% 50%}}
+        .vault-hero-title{font-family:var(--ff-h);font-size:clamp(3rem,8vw,5rem);font-weight:700;letter-spacing:.28em;line-height:1;background:linear-gradient(135deg,#a78bfa 0%,#38bdf8 50%,#fbbf24 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200% 200%;animation:vTitleShift 6s ease-in-out infinite alternate;}
+        .vault-hero-sub{font-family:var(--ff-h);font-size:.65rem;letter-spacing:.28em;color:var(--muted);text-transform:uppercase;margin-top:.55rem;}
+
+        /* Module card */
+        .vault-module{border-radius:18px;margin-bottom:1.4rem;overflow:hidden;position:relative;transition:box-shadow .35s var(--ease),transform .35s var(--ease);}
+        .vault-module:hover{transform:translateY(-3px);}
+        .vault-module--strength{background:linear-gradient(150deg,rgba(251,191,36,.08) 0%,rgba(13,11,26,1) 48%);border:1.5px solid rgba(251,191,36,.22);}
+        .vault-module--strength:hover{box-shadow:0 14px 50px rgba(251,191,36,.14),inset 0 1px 0 rgba(251,191,36,.15);border-color:rgba(251,191,36,.42);}
+        .vault-module--cardio{background:linear-gradient(150deg,rgba(56,189,248,.08) 0%,rgba(13,11,26,1) 48%);border:1.5px solid rgba(56,189,248,.22);}
+        .vault-module--cardio:hover{box-shadow:0 14px 50px rgba(56,189,248,.14),inset 0 1px 0 rgba(56,189,248,.15);border-color:rgba(56,189,248,.42);}
+
+        /* Header */
+        .vault-module-header{width:100%;background:transparent;border:none;display:flex;align-items:center;gap:1.1rem;padding:1.4rem 1.6rem 1.2rem;cursor:pointer;position:relative;border-bottom:1.5px solid rgba(167,139,250,.07);transition:background .2s;}
+        .vault-module--strength .vault-module-header::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 0%,#fbbf24 40%,#f59e0b 60%,transparent 100%);opacity:.9;}
+        .vault-module--cardio  .vault-module-header::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 0%,#38bdf8 40%,#06b6d4 60%,transparent 100%);opacity:.9;}
+        .vault-module-header:hover{background:rgba(255,255,255,.02);}
+        .vault-module-header[aria-expanded="false"]{border-bottom-color:transparent;}
+
+        /* Icon box */
+        .vault-mod-icon-wrap{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:box-shadow .3s;}
+        .vault-module--strength .vault-mod-icon-wrap{background:rgba(251,191,36,.1);color:#fbbf24;box-shadow:0 0 0 1px rgba(251,191,36,.25);}
+        .vault-module--strength:hover .vault-mod-icon-wrap{box-shadow:0 0 22px rgba(251,191,36,.32),0 0 0 1px rgba(251,191,36,.45);}
+        .vault-module--cardio .vault-mod-icon-wrap{background:rgba(56,189,248,.1);color:#38bdf8;box-shadow:0 0 0 1px rgba(56,189,248,.25);}
+        .vault-module--cardio:hover .vault-mod-icon-wrap{box-shadow:0 0 22px rgba(56,189,248,.32),0 0 0 1px rgba(56,189,248,.45);}
+
+        /* Labels */
+        .vault-mod-info{flex:1;text-align:left;}
+        .vault-mod-label{font-family:var(--ff-h);font-size:1.15rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;display:block;}
+        .vault-module--strength .vault-mod-label{color:#fbbf24;}
+        .vault-module--cardio  .vault-mod-label{color:#38bdf8;}
+        .vault-mod-count{font-family:var(--ff-h);font-size:.6rem;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-top:3px;display:block;}
+
+        /* Toggle chevron */
+        .vault-toggle-btn{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s,transform .3s var(--spring);}
+        .vault-module--strength .vault-toggle-btn{background:rgba(251,191,36,.1);color:#fbbf24;}
+        .vault-module--cardio  .vault-toggle-btn{background:rgba(56,189,248,.1);color:#38bdf8;}
+        .vault-module-header[aria-expanded="false"] .vault-toggle-btn{transform:rotate(-90deg);}
+
+        /* Sub-tabs */
+        .vault-subtabs{display:flex;gap:0;background:rgba(0,0,0,.22);border-bottom:1.5px solid rgba(167,139,250,.07);padding:0 1.4rem;}
+        .vault-subtab{font-family:var(--ff-h);font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);background:transparent;border:none;padding:.8rem 1rem;cursor:pointer;position:relative;transition:color .2s;}
+        .vault-subtab::after{content:'';position:absolute;bottom:-1.5px;left:0;right:0;height:2px;border-radius:2px 2px 0 0;background:transparent;transition:background .2s;}
+        .vault-module--strength .vault-subtab.active{color:#fbbf24;}
+        .vault-module--strength .vault-subtab.active::after{background:#fbbf24;}
+        .vault-module--cardio .vault-subtab.active{color:#38bdf8;}
+        .vault-module--cardio .vault-subtab.active::after{background:#38bdf8;}
+        .vault-subtab:hover:not(.active){color:var(--text);}
+
+        /* Content panes */
+        @keyframes vPaneFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+        .vault-pane{display:none;padding:1.4rem 1.6rem 1.6rem;}
+        .vault-pane.active{display:block;animation:vPaneFade .22s var(--ease);}
+
+        /* Vault PR items */
+        .vault-pr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.85rem;}
+        .vault-pr-card{background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.16);border-radius:13px;padding:1rem 1.2rem;display:flex;flex-direction:column;gap:.3rem;transition:border-color .2s,box-shadow .2s,transform .2s;}
+        .vault-pr-card:hover{border-color:rgba(56,189,248,.38);box-shadow:0 5px 18px rgba(56,189,248,.12);transform:translateY(-2px);}
+        .vault-pr-card-label{font-family:var(--ff-h);font-size:.6rem;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;}
+        .vault-pr-card-val{font-family:var(--ff-h);font-size:1.5rem;font-weight:700;color:#38bdf8;line-height:1.1;}
+
+        /* Storage access */
+        .vault-storage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.85rem;}
+        .vault-storage-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.45rem;padding:1.3rem 1rem;border-radius:14px;cursor:pointer;font-family:var(--ff-h);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid;transition:all .25s var(--ease);}
+        .vault-storage-btn-icon{font-size:1.6rem;line-height:1;}
+        .vault-storage-btn--export{background:rgba(52,211,153,.06);border-color:rgba(52,211,153,.25);color:#34d399;}
+        .vault-storage-btn--export:hover{background:rgba(52,211,153,.13);border-color:rgba(52,211,153,.55);box-shadow:0 5px 22px rgba(52,211,153,.18);transform:translateY(-2px);}
+        .vault-storage-btn--import{background:rgba(167,139,250,.06);border-color:rgba(167,139,250,.25);color:#a78bfa;}
+        .vault-storage-btn--import:hover{background:rgba(167,139,250,.13);border-color:rgba(167,139,250,.55);box-shadow:0 5px 22px rgba(167,139,250,.18);transform:translateY(-2px);}
+        .vault-storage-btn--wipe{background:rgba(248,113,113,.05);border-color:rgba(248,113,113,.22);color:#f87171;}
+        .vault-storage-btn--wipe:hover{background:rgba(248,113,113,.11);border-color:rgba(248,113,113,.48);box-shadow:0 5px 22px rgba(248,113,113,.14);transform:translateY(-2px);}
+
+        /* ── Settings Tab ── */
+        @keyframes gearSpin{to{transform:rotate(360deg)}}
+        .settings-hero{display:flex;align-items:center;gap:1.3rem;padding:2rem 0 2rem;border-bottom:1px solid rgba(167,139,250,.1);margin-bottom:2rem;}
+        .settings-hero-icon{width:58px;height:58px;border-radius:16px;background:rgba(167,139,250,.1);border:1.5px solid rgba(167,139,250,.22);display:flex;align-items:center;justify-content:center;color:#a78bfa;animation:gearSpin 18s linear infinite;flex-shrink:0;}
+        .settings-hero-title{font-family:var(--ff-h);font-size:1.9rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text);line-height:1;}
+        .settings-hero-sub{font-family:var(--ff-h);font-size:.62rem;letter-spacing:.22em;color:var(--muted);text-transform:uppercase;margin-top:4px;}
+        .settings-hero-badge{margin-left:auto;font-family:var(--ff-h);font-size:.58rem;letter-spacing:.14em;color:var(--dimmed);border:1px solid var(--bdr);border-radius:var(--r4);padding:.28rem .7rem;white-space:nowrap;}
+        .settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;}
+        .sc{border-radius:18px;padding:1.4rem;position:relative;overflow:hidden;display:flex;flex-direction:column;transition:transform .3s var(--ease),box-shadow .3s var(--ease),border-color .3s;}
+        .sc:hover{transform:translateY(-3px);}
+        .sc::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+        .sc--violet{background:linear-gradient(148deg,rgba(167,139,250,.08) 0%,rgba(13,11,26,1) 55%);border:1.5px solid rgba(167,139,250,.2);}
+        .sc--violet:hover{box-shadow:0 12px 42px rgba(167,139,250,.14);border-color:rgba(167,139,250,.42);}
+        .sc--violet::after{background:linear-gradient(90deg,transparent,#a78bfa,transparent);}
+        .sc--amber{background:linear-gradient(148deg,rgba(251,191,36,.07) 0%,rgba(13,11,26,1) 55%);border:1.5px solid rgba(251,191,36,.2);}
+        .sc--amber:hover{box-shadow:0 12px 42px rgba(251,191,36,.12);border-color:rgba(251,191,36,.42);}
+        .sc--amber::after{background:linear-gradient(90deg,transparent,#fbbf24,transparent);}
+        .sc--danger{background:linear-gradient(148deg,rgba(248,113,113,.07) 0%,rgba(13,11,26,1) 55%);border:1.5px solid rgba(248,113,113,.2);}
+        .sc--danger:hover{box-shadow:0 12px 42px rgba(248,113,113,.12);border-color:rgba(248,113,113,.42);}
+        .sc--danger::after{background:linear-gradient(90deg,transparent,#f87171,transparent);}
+        .sc-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.9rem;}
+        .sc-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+        .sc--violet .sc-icon{background:rgba(167,139,250,.12);color:#a78bfa;}
+        .sc--amber  .sc-icon{background:rgba(251,191,36,.12);color:#fbbf24;}
+        .sc--danger .sc-icon{background:rgba(248,113,113,.1);color:#f87171;}
+        .sc-badge{font-family:var(--ff-h);font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;padding:.22rem .6rem;border-radius:var(--r4);}
+        .sc--violet .sc-badge{background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.25);}
+        .sc--amber  .sc-badge{background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.25);}
+        .sc--danger .sc-badge{background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.25);}
+        .sc-name{font-family:var(--ff-h);font-size:1rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text);margin-bottom:.4rem;}
+        .sc-desc{font-size:.78rem;color:var(--muted);line-height:1.45;flex:1;margin-bottom:.9rem;}
+        .sc-btn{width:100%;padding:.72rem 1rem;border-radius:10px;border:1.5px solid;font-family:var(--ff-h);font-size:.76rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .25s var(--ease);}
+        .sc--violet .sc-btn{background:rgba(167,139,250,.08);border-color:rgba(167,139,250,.3);color:#a78bfa;}
+        .sc--violet .sc-btn:hover{background:rgba(167,139,250,.18);border-color:rgba(167,139,250,.6);box-shadow:0 4px 18px rgba(167,139,250,.2);}
+        .sc--amber  .sc-btn{background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.3);color:#fbbf24;}
+        .sc--amber  .sc-btn:hover{background:rgba(251,191,36,.18);border-color:rgba(251,191,36,.6);box-shadow:0 4px 18px rgba(251,191,36,.2);}
+        .sc--danger .sc-btn{background:rgba(248,113,113,.08);border-color:rgba(248,113,113,.3);color:#f87171;}
+        .sc--danger .sc-btn:hover{background:rgba(248,113,113,.18);border-color:rgba(248,113,113,.6);box-shadow:0 4px 18px rgba(248,113,113,.2);}
+
+        /* ── Date Chip ── */
+        .date-chip-wrap{position:fixed;top:1rem;left:1.5rem;z-index:499;filter:drop-shadow(0 0 1px rgba(167,139,250,.45)) drop-shadow(0 8px 22px rgba(167,139,250,.22));cursor:default;user-select:none;transition:filter .35s;}
+        .date-chip-wrap:hover{filter:drop-shadow(0 0 2px rgba(255,107,157,.55)) drop-shadow(0 10px 30px rgba(167,139,250,.42));}
+        .date-chip{width:54px;background:linear-gradient(168deg,#1d1a35 0%,#0f0d20 100%);clip-path:polygon(0 0,100% 0,100% 76%,76% 100%,0 100%);text-align:center;padding:0 8px 18px;position:relative;overflow:hidden;}
+        .date-chip::before{content:'';display:block;width:calc(100% + 16px);margin-left:-8px;height:6px;background:linear-gradient(90deg,#ff6b9d,#fb7185);margin-bottom:9px;}
+        .date-chip-month{font-family:var(--ff-h);font-size:.52rem;letter-spacing:.22em;color:#ff6b9d;text-transform:uppercase;margin-bottom:1px;}
+        .date-chip-num{font-family:var(--ff-h);font-size:2.1rem;font-weight:700;line-height:1;color:#ede9ff;margin-bottom:3px;}
+        .date-chip-dow{font-family:var(--ff-h);font-size:.5rem;letter-spacing:.2em;color:#8883a8;text-transform:uppercase;}
+        @media(max-width:640px){.date-chip-wrap{top:1rem;left:.75rem;}}
+
+        /* ── Body Module (Vault) ── */
+        .vault-module--body{background:linear-gradient(150deg,rgba(74,222,128,.08) 0%,rgba(13,11,26,1) 48%);border:1.5px solid rgba(74,222,128,.22);}
+        .vault-module--body:hover{box-shadow:0 14px 50px rgba(74,222,128,.14),inset 0 1px 0 rgba(74,222,128,.15);border-color:rgba(74,222,128,.42);}
+        .vault-module--body .vault-module-header::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 0%,#4ade80 40%,#16a34a 60%,transparent 100%);opacity:.9;}
+        .vault-module--body .vault-mod-icon-wrap{background:rgba(74,222,128,.1);color:#4ade80;box-shadow:0 0 0 1px rgba(74,222,128,.25);}
+        .vault-module--body:hover .vault-mod-icon-wrap{box-shadow:0 0 22px rgba(74,222,128,.32),0 0 0 1px rgba(74,222,128,.45);}
+        .vault-module--body .vault-mod-label{color:#4ade80;}
+        .vault-module--body .vault-toggle-btn{background:rgba(74,222,128,.1);color:#4ade80;}
+        .vault-module--body .vault-subtab.active{color:#4ade80;}
+        .vault-module--body .vault-subtab.active::after{background:#4ade80;}
+        .vault-module--body .vault-storage-btn--export{background:rgba(74,222,128,.06);border-color:rgba(74,222,128,.25);color:#4ade80;}
+        .vault-module--body .vault-storage-btn--export:hover{background:rgba(74,222,128,.13);border-color:rgba(74,222,128,.55);box-shadow:0 5px 22px rgba(74,222,128,.18);transform:translateY(-2px);}
+        .vault-module--body .vault-storage-btn--import{background:rgba(74,222,128,.06);border-color:rgba(74,222,128,.25);color:#4ade80;}
+        .vault-module--body .vault-storage-btn--import:hover{background:rgba(74,222,128,.13);border-color:rgba(74,222,128,.55);box-shadow:0 5px 22px rgba(74,222,128,.18);transform:translateY(-2px);}
+
+        /* ── Arsenal tooltip ── */
+        .metric-info-tip{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:rgba(167,139,250,.15);color:var(--muted);font-size:9px;font-style:normal;cursor:help;margin-left:5px;vertical-align:middle;position:relative;font-family:var(--ff-b);}
+        .metric-info-tip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(22,19,42,.97);border:1px solid rgba(167,139,250,.22);border-radius:9px;padding:6px 11px;font-family:var(--ff-b);font-size:11px;font-weight:400;color:var(--text);white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .17s;z-index:60;letter-spacing:.02em;}
+        .metric-info-tip:hover::after,.metric-info-tip:focus::after{opacity:1;}
+
+        /* ── Settings card — sky variant ── */
+        .sc--sky{background:linear-gradient(148deg,rgba(56,189,248,.07) 0%,rgba(13,11,26,1) 55%);border:1.5px solid rgba(56,189,248,.2);}
+        .sc--sky:hover{box-shadow:0 12px 42px rgba(56,189,248,.12);border-color:rgba(56,189,248,.42);}
+        .sc--sky::after{background:linear-gradient(90deg,transparent,#38bdf8,transparent);}
+        .sc--sky .sc-icon{background:rgba(56,189,248,.12);color:#38bdf8;}
+        .sc--sky .sc-badge{background:rgba(56,189,248,.1);color:#38bdf8;border:1px solid rgba(56,189,248,.25);}
+        .sc--sky .sc-name{color:var(--text);}
+
+        /* ── Unit toggle ── */
+        .unit-toggle{display:flex;gap:0;background:rgba(0,0,0,.28);border-radius:10px;padding:3px;overflow:hidden;width:100%;}
+        .unit-toggle-btn{flex:1;padding:.55rem 1rem;border-radius:8px;border:none;background:transparent;color:var(--muted);font-family:var(--ff-h);font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s var(--ease);}
+        .unit-toggle-btn.active{background:rgba(56,189,248,.15);color:#38bdf8;box-shadow:0 2px 10px rgba(56,189,248,.15);}
+        .unit-toggle-btn:not(.active):hover{color:var(--text);}
+
+        /* ── Shortcuts Modal ── */
+        .shortcuts-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);z-index:700;display:none;align-items:center;justify-content:center;}
+        .shortcuts-overlay.open{display:flex;}
+        @keyframes scFadeIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+        .shortcuts-panel{background:linear-gradient(150deg,rgba(167,139,250,.09) 0%,#0d0b1a 60%);border:1.5px solid rgba(167,139,250,.28);border-radius:20px;width:min(540px,94vw);overflow:hidden;position:relative;animation:scFadeIn .2s var(--ease);}
+        .shortcuts-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#a78bfa 40%,#38bdf8 60%,transparent);opacity:.9;}
+        .shortcuts-head{display:flex;align-items:center;justify-content:space-between;padding:1.4rem 1.6rem 1rem;border-bottom:1px solid rgba(167,139,250,.1);}
+        .shortcuts-head-title{font-family:var(--ff-h);font-size:1rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text);display:flex;align-items:center;gap:.7rem;}
+        .shortcuts-head-badge{font-family:var(--ff-h);font-size:.52rem;letter-spacing:.14em;background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.25);color:#a78bfa;border-radius:var(--r4);padding:.2rem .6rem;text-transform:uppercase;}
+        .shortcuts-close-btn{width:32px;height:32px;border-radius:50%;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.2);color:#a78bfa;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:background .2s;}
+        .shortcuts-close-btn:hover{background:rgba(167,139,250,.22);}
+        .shortcuts-body{padding:1.3rem 1.6rem 1.6rem;display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;}
+        @media(max-width:480px){.shortcuts-body{grid-template-columns:1fr;}}
+        .sc-group-label{font-family:var(--ff-h);font-size:.55rem;letter-spacing:.22em;text-transform:uppercase;color:var(--dimmed);margin-bottom:.65rem;padding-bottom:.4rem;border-bottom:1px solid rgba(167,139,250,.08);}
+        .sc-row{display:flex;align-items:center;justify-content:space-between;padding:.38rem 0;}
+        .sc-row+.sc-row{border-top:1px solid rgba(255,255,255,.04);}
+        .sc-keys{display:flex;align-items:center;gap:.25rem;}
+        .sc-keys kbd{font-family:var(--ff-h);font-size:.65rem;background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.3);border-bottom-width:2px;border-radius:5px;padding:.15rem .45rem;color:#a78bfa;letter-spacing:.04em;white-space:nowrap;}
+        .sc-keys kbd.sc-kbd--amber{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.3);color:#fbbf24;}
+        .sc-keys kbd.sc-kbd--sky{background:rgba(56,189,248,.1);border-color:rgba(56,189,248,.3);color:#38bdf8;}
+        .sc-keys kbd.sc-kbd--gold{background:rgba(212,175,55,.1);border-color:rgba(212,175,55,.3);color:#d4af37;}
+        .sc-keys kbd.sc-kbd--mint{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3);color:#34d399;}
+        .sc-plus{font-size:.7rem;color:var(--dimmed);}
+        .sc-desc{font-size:.78rem;color:var(--muted);text-align:right;}
+
+        /* ── Body Measurements Section ── */
+        .meas-hero{text-align:center;padding:2rem 0 1.6rem;position:relative;}
+        .meas-hero-eyebrow{font-family:var(--ff-h);font-size:.6rem;letter-spacing:.45em;color:var(--dimmed);text-transform:uppercase;margin-bottom:.6rem;}
+        .meas-hero-title{font-family:var(--ff-h);font-size:clamp(1.6rem,4vw,2.2rem);font-weight:700;letter-spacing:.2em;background:linear-gradient(135deg,#a78bfa 0%,#38bdf8 60%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .meas-hero-sub{font-family:var(--ff-h);font-size:.62rem;letter-spacing:.22em;color:var(--muted);text-transform:uppercase;margin-top:.4rem;}
+        .meas-stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.75rem;margin-bottom:1.4rem;}
+        .meas-stat-card{background:var(--bg-card);border:1px solid var(--bdr);border-radius:var(--r2);padding:1rem .9rem .85rem;position:relative;overflow:hidden;transition:transform .25s var(--ease),border-color .25s var(--ease),box-shadow .25s var(--ease);text-align:center;}
+        .meas-stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--violet),transparent);opacity:.7;}
+        .meas-stat-card:hover{transform:translateY(-3px);border-color:rgba(167,139,250,.38);box-shadow:0 8px 28px rgba(167,139,250,.12);}
+        .msc-label{font-family:var(--ff-h);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.45rem;}
+        .msc-val{font-family:var(--ff-h);font-size:1.7rem;font-weight:700;color:var(--violet);line-height:1.05;}
+        .msc-val.empty{color:var(--dimmed);font-size:1.3rem;}
+        .msc-unit{font-family:var(--ff-h);font-size:.55rem;letter-spacing:.14em;color:var(--dimmed);margin-top:.25rem;}
+        .msc-trend{display:flex;align-items:center;justify-content:center;gap:.3rem;margin-top:.35rem;font-family:var(--ff-h);font-size:.68rem;font-weight:600;}
+        .msc-trend.up{color:var(--danger);}
+        .msc-trend.down{color:var(--mint);}
+        .meas-divider{display:flex;align-items:center;gap:.9rem;margin:1.8rem 0 1.4rem;}
+        .meas-divider-line{flex:1;height:1px;background:var(--bdr);}
+        .meas-divider-label{font-family:var(--ff-h);font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--dimmed);}
+        .meas-main-row{display:grid;grid-template-columns:1fr;gap:1.2rem;}
+        @media(min-width:768px){.meas-main-row{grid-template-columns:1fr 1fr;}}
+        .meas-form-card{background:var(--bg-card);border:1.5px solid rgba(167,139,250,.18);border-radius:var(--r2);padding:1.4rem;position:relative;overflow:hidden;}
+        .meas-form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 0%,#a78bfa 40%,#38bdf8 60%,transparent 100%);}
+        .meas-form-title{font-family:var(--ff-h);font-size:.82rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text);margin-bottom:1.1rem;}
+        .meas-form-title span{color:var(--violet);}
+        .meas-form-row{margin-bottom:.9rem;}
+        .meas-form-label{display:block;font-family:var(--ff-h);font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:.45rem;}
+        .meas-input{width:100%;background:var(--bg-input);border:1px solid var(--bdr);border-radius:var(--r1);color:var(--text);font-family:var(--ff-b);font-size:.95rem;padding:.65rem .85rem;transition:border-color .2s,box-shadow .2s;outline:none;-webkit-appearance:none;appearance:none;}
+        .meas-input:focus{border-color:var(--bdr-focus);box-shadow:0 0 0 3px rgba(167,139,250,.14);}
+        .meas-dims-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;}
+        .meas-save-btn{width:100%;background:linear-gradient(135deg,#a78bfa,#38bdf8);border:none;border-radius:var(--r2);color:#0d0b1a;font-family:var(--ff-h);font-weight:700;font-size:.85rem;letter-spacing:.12em;padding:.85rem;cursor:pointer;margin-top:.3rem;transition:opacity .2s,transform .2s;}
+        .meas-save-btn:hover{opacity:.88;transform:translateY(-2px);}
+        .meas-history-card{background:var(--bg-card);border:1px solid var(--bdr);border-radius:var(--r2);padding:1.4rem;overflow:hidden;display:flex;flex-direction:column;}
+        .meas-history-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem;}
+        .meas-history-title{font-family:var(--ff-h);font-size:.82rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text);}
+        .meas-history-actions{display:flex;gap:.5rem;}
+        .meas-act-btn{font-family:var(--ff-h);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;background:transparent;border:1px solid var(--bdr);border-radius:var(--r1);color:var(--muted);padding:.4rem .75rem;cursor:pointer;transition:border-color .2s,color .2s;}
+        .meas-act-btn:hover{border-color:rgba(167,139,250,.4);color:var(--violet);}
+        .meas-act-btn.danger:hover{border-color:rgba(248,113,113,.4);color:var(--danger);}
+        .meas-history-list{max-height:360px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(167,139,250,.25) transparent;flex:1;}
+        .meas-history-row{display:grid;grid-template-columns:76px repeat(5,1fr) 30px;gap:.25rem;align-items:center;padding:.55rem .4rem;border-radius:var(--r1);transition:background .15s;}
+        .meas-history-row:hover{background:rgba(167,139,250,.05);}
+        .meas-history-row.header{color:var(--dimmed);font-family:var(--ff-h);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;border-bottom:1px solid var(--bdr);padding-bottom:.5rem;margin-bottom:.2rem;}
+        .mhr-date{font-family:var(--ff-h);font-size:.75rem;color:var(--muted);}
+        .mhr-val{font-family:var(--ff-h);font-size:.85rem;font-weight:600;color:var(--text);text-align:center;}
+        .mhr-delete{background:transparent;border:none;color:var(--dimmed);cursor:pointer;font-size:.82rem;transition:color .15s;text-align:right;}
+        .mhr-delete:hover{color:var(--danger);}
+        .meas-chart-wrap{margin-top:1.4rem;border-top:1px solid var(--bdr);padding-top:1.2rem;}
+        .meas-chart-title{font-family:var(--ff-h);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;}
+        .meas-chart-canvas-wrap{height:148px;position:relative;}
+        .meas-empty-state{text-align:center;padding:2rem 1rem;color:var(--dimmed);font-family:var(--ff-h);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;line-height:1.8;}
+
+        /* ── Sync Status Dot ── */
+        .sync-dot{width:7px;height:7px;border-radius:50%;background:rgba(167,139,250,.25);flex-shrink:0;transition:background .4s;}
+        .sync-dot--synced{background:#34d399;}
+        .sync-dot--syncing{background:#fbbf24;animation:syncPulse 1s ease-in-out infinite;}
+        .sync-dot--error{background:#f87171;}
+        @keyframes syncPulse{0%,100%{opacity:1}50%{opacity:.35}}
+        #sync-label{font-size:.68rem;color:var(--muted);font-family:var(--ff-h);letter-spacing:.07em;}
+
+        /* ── Weekly Summary Card ── */
+        .week-summary-card{background:var(--bg-card);border:1px solid var(--bdr);border-radius:var(--r2);padding:1.1rem 1.4rem 1.2rem;margin-bottom:1.6rem;position:relative;overflow:hidden;}
+        .week-summary-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#a78bfa 40%,#38bdf8 60%,transparent);}
+        .ws-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;}
+        .ws-title{font-family:var(--ff-h);font-size:.68rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);}
+        .ws-period{font-family:var(--ff-h);font-size:.58rem;letter-spacing:.1em;color:var(--dimmed);}
+        .ws-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;}
+        .ws-item{text-align:center;padding:.55rem .3rem;background:rgba(167,139,250,.04);border-radius:var(--r1);}
+        .ws-val{font-family:var(--ff-h);font-size:1.35rem;font-weight:700;color:var(--text);line-height:1.1;}
+        .ws-lbl{font-family:var(--ff-h);font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dimmed);margin-top:.25rem;}
+
+        /* ── 1RM Calculator ── */
+        .orm-card{background:var(--bg-card);border:1px solid rgba(251,191,36,.16);border-radius:var(--r2);padding:1.1rem 1.4rem 1.2rem;margin-bottom:1.6rem;position:relative;overflow:hidden;}
+        .orm-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#fbbf24 40%,#f59e0b 60%,transparent);}
+        .orm-head{display:flex;align-items:center;gap:.6rem;margin-bottom:.9rem;}
+        .orm-title{font-family:var(--ff-h);font-size:.68rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#fbbf24;}
+        .orm-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;align-items:end;}
+        .orm-field label{display:block;font-family:var(--ff-h);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;}
+        .orm-field input{width:100%;background:var(--bg-input);border:1px solid var(--bdr);border-radius:var(--r1);color:var(--text);font-family:var(--ff-h);font-size:1rem;padding:.58rem .75rem;outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none;}
+        .orm-field input:focus{border-color:rgba(251,191,36,.45);box-shadow:0 0 0 3px rgba(251,191,36,.1);}
+        .orm-result{text-align:center;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);border-radius:var(--r2);padding:.65rem .4rem;}
+        .orm-result-val{font-family:var(--ff-h);font-size:1.35rem;font-weight:700;color:#fbbf24;line-height:1.1;}
+        .orm-result-lbl{font-family:var(--ff-h);font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dimmed);margin-top:.2rem;}
+
+        /* ── Last Session Hint ── */
+        .last-hint{padding:.6rem .85rem;background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.16);border-radius:var(--r1);font-family:var(--ff-h);}
+        .last-hint-label{font-size:.52rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dimmed);margin-bottom:.2rem;}
+        .last-hint-val{color:#a78bfa;font-size:.8rem;font-weight:600;letter-spacing:.04em;}
+    </style>
+</head>
+<body>
+
+    <!-- Auth Overlay -->
+    <div id="authOverlay" class="auth-overlay">
+        <div class="auth-deco-grid"></div>
+        <div class="auth-deco-line"></div>
+        <div class="auth-deco-word" aria-hidden="true"><span>TITAN</span><span>CREW</span></div>
+        <div class="auth-geo" aria-hidden="true">
+            <div class="auth-ring auth-ring--1"></div>
+            <div class="auth-ring auth-ring--2"></div>
+            <div class="auth-ring auth-ring--3"></div>
+            <div class="auth-ring auth-ring--4"></div>
+        </div>
+        <div class="auth-frag auth-frag--1" aria-hidden="true"></div>
+        <div class="auth-frag auth-frag--2" aria-hidden="true"></div>
+        <div class="auth-frag auth-frag--3" aria-hidden="true"></div>
+        <div class="auth-frag auth-frag--4" aria-hidden="true"></div>
+        <div class="auth-frag auth-frag--5" aria-hidden="true"></div>
+        <div class="auth-card">
+            <div class="auth-eyebrow">☁ Cloud Sync</div>
+            <h2 class="auth-title">Sign<br><em>in.</em></h2>
+            <div class="auth-fields">
+                <div class="auth-field">
+                    <label class="auth-field-label" for="authEmail">Email</label>
+                    <input class="auth-input" type="email" id="authEmail" autocomplete="email" spellcheck="false">
+                </div>
+                <div class="auth-field">
+                    <label class="auth-field-label" for="authPassword">Password</label>
+                    <input class="auth-input" type="password" id="authPassword" autocomplete="current-password">
+                </div>
+            </div>
+            <div class="auth-error" id="authError"></div>
+            <button class="auth-submit" id="authSubmit" type="button">
+                <span>Enter</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div id="geoBg" aria-hidden="true">
+        <div class="geo-shape geo-shape--1"></div>
+        <div class="geo-shape geo-shape--2"></div>
+        <div class="geo-shape geo-shape--3"></div>
+        <div class="geo-shape geo-shape--4"></div>
+        <div class="geo-shape geo-shape--5"></div>
+        <div class="geo-shape geo-shape--6"></div>
+    </div>
+
+    <div id="toast" class="toast" aria-live="polite"></div>
+
+    <!-- Session bar -->
+    <div id="sessionBar" class="session-bar">
+        <div class="session-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            <span id="sessionUser">—</span>
+        </div>
+        <div class="session-divider"></div>
+        <div class="session-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+            <span id="sessionDuration">0:00</span>
+        </div>
+        <div class="session-divider"></div>
+        <div class="session-item" id="sync-status-item" style="display:none;" title="Cloud sync status">
+            <div id="sync-dot" class="sync-dot"></div>
+            <span id="sync-label">Offline</span>
+        </div>
+    </div>
+
+    <!-- Date Chip -->
+    <div class="date-chip-wrap" aria-label="Today's date">
+        <div class="date-chip">
+            <div class="date-chip-month" id="dcMonth">—</div>
+            <div class="date-chip-num"   id="dcDay">—</div>
+            <div class="date-chip-dow"   id="dcDow">—</div>
+        </div>
+    </div>
+
+    <!-- PST clock -->
+    <div class="pst-clock">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+        <div>
+            <div class="pst-clock-label">PST</div>
+            <div id="pstClockTime" class="pst-clock-time">--:--:--</div>
+        </div>
+    </div>
+
+    <div class="page-wrap">
+
+        <!-- Hero -->
+        <div class="hero">
+            <div class="hero-icon-wrap">
+                <div class="hg-rays"           aria-hidden="true"></div>
+                <div class="hg-glow"           aria-hidden="true"></div>
+                <div class="hg-ring hg-ring--1" aria-hidden="true"></div>
+                <div class="hg-ring hg-ring--2" aria-hidden="true"></div>
+                <div class="hg-ring hg-ring--3" aria-hidden="true"></div>
+                <img class="hero-favicon" src="favicon/android-chrome-192x192.png" alt="Titan Crew">
+            </div>
+            <h1>Titan Crew</h1>
+            <p class="tagline">"Train like a Titan. Build strength, discipline, and legacy."</p>
+        </div>
+
+        <!-- Time Strip -->
+        <div class="time-strip">
+            <div class="time-pill">
+                <div class="time-pill-label">Day</div>
+                <div id="widgetDayOfWeek" class="time-pill-value">—</div>
+            </div>
+            <div class="time-pill">
+                <div class="time-pill-label">Week</div>
+                <div id="widgetWeekDates" class="time-pill-value">— — —</div>
+            </div>
+            <div class="time-pill">
+                <div class="time-pill-label">Day of Year</div>
+                <div id="widgetDayOfYear" class="time-pill-value">0 / 365</div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-nav" role="tablist" aria-label="App sections">
+            <button class="tab-btn active" data-tab="strength" role="tab">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 6.5h11M6.5 17.5h11M3 10h18M3 14h18"/></svg>
+                Strength
+            </button>
+            <button class="tab-btn tab--cardio" data-tab="cardio" role="tab">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h2l2-6 4 12 3-7 2 4h4"/></svg>
+                Cardio
+            </button>
+            <button class="tab-btn tab--body" data-tab="body" role="tab">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 10c-5 0-8 2.5-8 5v1h16v-1c0-2.5-3-5-8-5z"/></svg>
+                Weight
+            </button>
+            <button class="tab-btn tab--metrics" data-tab="metrics" role="tab">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 4-4"/></svg>
+                Metrics
+            </button>
+            <button class="tab-btn tab--vault" data-tab="vault" role="tab">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M12 9v1M12 14v1M9 12h1M14 12h1"/><path d="M19 8h2M19 16h2"/></svg>
+                Vault
+            </button>
+            <button class="tab-btn tab--workout" data-tab="workout" role="tab">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                    <path d="M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z"/>
+                    <path d="m9 12 2 2 4-4"/>
+                </svg>
+                Workout
+            </button>
+            <button class="tab-btn tab--system" data-tab="system" role="tab">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M7 9.5H4.5M7 12H4.5M7 14.5H4.5M17 9.5h2.5M17 12h2.5M17 14.5h2.5M9.5 7V4.5M12 7V4.5M14.5 7V4.5M9.5 17v2.5M12 17v2.5M14.5 17v2.5"/></svg>
+                Settings
+            </button>
+        </nav>
+
+        <!-- ══════════════════ STRENGTH TAB ══════════════════ -->
+        <div id="tab-strength" class="tab-section active">
+
+            <div class="tab-bg tab-bg--strength" aria-hidden="true">
+                <div class="tbg-s-orb tbg-s-orb--1"></div>
+                <div class="tbg-s-orb tbg-s-orb--2"></div>
+                <div class="tbg-s-grid"></div>
+                <div class="tbg-s-bar tbg-s-bar--1"></div>
+                <div class="tbg-s-bar tbg-s-bar--2"></div>
+                <div class="tbg-s-bar tbg-s-bar--3"></div>
+            </div>
+
+            <!-- Bento Metrics -->
+            <div class="bento">
+                <div class="metric-card mc--coral">
+                    <span class="metric-icon">🏋️</span>
+                    <div class="metric-label">Weekly Volume</div>
+                    <div id="weeklyVolume" class="metric-value">0</div>
+                    <div id="volumeUnit" class="metric-unit">lbs lifted</div>
+                    <div class="metric-bar"><div id="weeklyVolumeBar" class="metric-bar-fill" style="width:0%"></div></div>
+                </div>
+                <div class="metric-card mc--amber">
+                    <span class="metric-icon">🔥</span>
+                    <div class="metric-label">Streak</div>
+                    <div id="workoutStreak" class="metric-value">0</div>
+                    <div class="metric-unit">consecutive days</div>
+                </div>
+                <div class="metric-card mc--violet">
+                    <span class="metric-icon">💪</span>
+                    <div class="metric-label">
+                        Arsenal
+                        <span class="metric-info-tip" data-tip="Unique exercises you have ever logged a weighted set for">ⓘ</span>
+                    </div>
+                    <div id="prCount" class="metric-value">0</div>
+                    <div class="metric-unit">exercises tracked</div>
+                </div>
+                <div class="metric-card mc--mint">
+                    <span class="metric-icon">📈</span>
+                    <div class="metric-label">Volume Trend</div>
+                    <div id="volumeTrend" class="metric-value">—</div>
+                    <div id="trendBadge" class="trend-badge trend-badge--flat">vs last week</div>
+                </div>
+                <div class="metric-card mc--sky">
+                    <span class="metric-icon">⚡</span>
+                    <div class="metric-label">Avg Intensity</div>
+                    <div id="avgRpe" class="metric-value">—</div>
+                    <div class="metric-unit">avg RPE this week</div>
+                </div>
+                <div class="metric-card mc--rose">
+                    <span class="metric-icon">🎯</span>
+                    <div class="metric-label">Total Sessions</div>
+                    <div id="totalSessions" class="metric-value">0</div>
+                    <div class="metric-unit">workout days logged</div>
+                </div>
+            </div>
+
+            <!-- Weekly Summary -->
+            <div class="week-summary-card">
+                <div class="ws-head">
+                    <div class="ws-title">This Week</div>
+                    <div class="ws-period" id="ws-period">—</div>
+                </div>
+                <div class="ws-grid">
+                    <div class="ws-item">
+                        <div class="ws-val" id="ws-sessions">0</div>
+                        <div class="ws-lbl">Sessions</div>
+                    </div>
+                    <div class="ws-item">
+                        <div class="ws-val" id="ws-volume">0</div>
+                        <div class="ws-lbl">Volume</div>
+                    </div>
+                    <div class="ws-item">
+                        <div class="ws-val" id="ws-cardio">0</div>
+                        <div class="ws-lbl">Cardio min</div>
+                    </div>
+                    <div class="ws-item">
+                        <div class="ws-val" id="ws-wdelta">—</div>
+                        <div class="ws-lbl">Weight Δ</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1RM Calculator -->
+            <div class="orm-card">
+                <div class="orm-head">
+                    <span style="font-size:1rem;line-height:1;">🏆</span>
+                    <div class="orm-title">1RM Calculator</div>
+                </div>
+                <div class="orm-row">
+                    <div class="orm-field">
+                        <label for="orm-weight">Weight</label>
+                        <input type="number" id="orm-weight" min="0" step="0.5" placeholder="135">
+                    </div>
+                    <div class="orm-field">
+                        <label for="orm-reps">Reps</label>
+                        <input type="number" id="orm-reps" min="1" max="36" placeholder="5">
+                    </div>
+                    <div class="orm-result">
+                        <div class="orm-result-val" id="orm-result-val">—</div>
+                        <div class="orm-result-lbl">Est. 1RM</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Open Log Sidebar Button -->
+            <div style="display:flex;justify-content:center;margin-bottom:2.2rem;">
+                <button id="btnOpenLog" class="log-open-btn">
+                    + Log a Set
+                    <span class="log-kbd">S</span>
+                </button>
+            </div>
+
+        </div><!-- /tab-strength -->
+
+        <!-- ══════════════════ CARDIO TAB ══════════════════ -->
+        <div id="tab-cardio" class="tab-section">
+
+            <div class="tab-bg tab-bg--cardio" aria-hidden="true">
+                <div class="tbg-c-orb tbg-c-orb--1"></div>
+                <div class="tbg-c-orb tbg-c-orb--2"></div>
+                <div class="tbg-c-ring tbg-c-ring--1"></div>
+                <div class="tbg-c-ring tbg-c-ring--2"></div>
+                <div class="tbg-c-ring tbg-c-ring--3"></div>
+            </div>
+
+            <!-- Stats -->
+            <div class="cardio-stats">
+                <div class="cardio-stat cardio-stat--workouts">
+                    <div class="cs-label">Workouts</div>
+                    <div class="cs-value" id="c-total-workouts">0</div>
+                </div>
+                <div class="cardio-stat cardio-stat--distance">
+                    <div class="cs-label">Distance</div>
+                    <div class="cs-value" id="c-total-distance">0<span class="cs-unit">mi</span></div>
+                </div>
+                <div class="cardio-stat cardio-stat--time">
+                    <div class="cs-label">Time</div>
+                    <div class="cs-value" id="c-total-time">0<span class="cs-unit">min</span></div>
+                </div>
+                <div class="cardio-stat cardio-stat--calories">
+                    <div class="cs-label">Calories</div>
+                    <div class="cs-value" id="c-total-calories">0</div>
+                </div>
+                <div class="cardio-stat cardio-stat--avgcal">
+                    <div class="cs-label">Avg Cal</div>
+                    <div class="cs-value" id="c-avg-calories">0</div>
+                </div>
+            </div>
+
+            <!-- Visual Row -->
+            <div class="cardio-visual-row">
+
+                <!-- Heatmap -->
+                <div class="heatmap-card">
+                    <div class="hm-card-header">
+                        <div class="hm-card-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h2l2-6 4 12 3-7 2 4h4"/></svg>
+                            Activity Heatmap
+                        </div>
+                        <div class="hm-card-meta">Last 16 weeks</div>
+                    </div>
+                    <div class="heatmap-legend">
+                        <div class="hm-chip hm-chip--none">None</div>
+                        <div class="hm-chip hm-chip--treadmill">Treadmill</div>
+                        <div class="hm-chip hm-chip--elliptical">Elliptical</div>
+                        <div class="hm-chip hm-chip--swimming">Swimming</div>
+                        <div class="hm-chip hm-chip--walking">Walking</div>
+                    </div>
+                    <div style="flex:1;overflow:hidden;">
+                        <div id="c-hm-months" class="hm-months"></div>
+                        <div id="c-hm-cols"   class="hm-cols"></div>
+                    </div>
+                    <div class="hm-dist-wrap">
+                        <div class="hm-dist-header">
+                            <span class="hm-dist-title">Activity Distribution</span>
+                        </div>
+                        <div id="c-dist-row" class="hm-dist-row"></div>
+                    </div>
+                </div>
+
+                <!-- Monthly Mini -->
+                <div class="monthly-mini">
+                    <div class="monthly-nav-row">
+                        <button class="monthly-nav-btn" id="c-cal-prev">‹</button>
+                        <div class="monthly-month-lbl" id="c-cal-month-lbl">---</div>
+                        <button class="monthly-nav-btn" id="c-cal-next">›</button>
+                    </div>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:0.8rem;">
+                        <div class="hm-legend-item" style="font-size:0.68rem;font-family:var(--ff-h);color:var(--muted);">
+                            <div class="hm-legend-dot" style="background:#facc15;width:10px;height:10px;"></div>Treadmill
+                        </div>
+                        <div class="hm-legend-item" style="font-size:0.68rem;font-family:var(--ff-h);color:var(--muted);">
+                            <div class="hm-legend-dot" style="background:#22c55e;width:10px;height:10px;"></div>Elliptical
+                        </div>
+                        <div class="hm-legend-item" style="font-size:0.68rem;font-family:var(--ff-h);color:var(--muted);">
+                            <div class="hm-legend-dot" style="background:var(--sky);width:10px;height:10px;"></div>Swimming
+                        </div>
+                        <div class="hm-legend-item" style="font-size:0.68rem;font-family:var(--ff-h);color:var(--muted);">
+                            <div class="hm-legend-dot" style="background:#c084fc;width:10px;height:10px;"></div>Walking
+                        </div>
+                    </div>
+                    <div class="monthly-grid-wrap" id="c-monthly-grid"></div>
+                </div>
+
+            </div><!-- /cardio-visual-row -->
+
+            <div style="display:flex;justify-content:center;margin-top:1.4rem;margin-bottom:2rem;">
+                <button id="c-open-panel-cardio" class="log-open-btn" style="background:linear-gradient(135deg,var(--sky),var(--mint));color:#0d0b1a;">
+                    + Log Cardio Session
+                    <span class="log-kbd">C</span>
+                </button>
+            </div>
+
+        </div><!-- /tab-cardio -->
+
+        <!-- ══════════════════ BODY TAB ══════════════════ -->
+        <div id="tab-body" class="tab-section">
+
+            <div class="tab-bg tab-bg--body" aria-hidden="true">
+                <div class="tbg-b-glow"></div>
+                <div class="tbg-b-line tbg-b-line--1"></div>
+                <div class="tbg-b-line tbg-b-line--2"></div>
+                <div class="tbg-b-line tbg-b-line--3"></div>
+                <div class="tbg-b-particle tbg-b-particle--1"></div>
+                <div class="tbg-b-particle tbg-b-particle--2"></div>
+                <div class="tbg-b-particle tbg-b-particle--3"></div>
+                <div class="tbg-b-particle tbg-b-particle--4"></div>
+                <div class="tbg-b-particle tbg-b-particle--5"></div>
+            </div>
+
+            <!-- Streak Bar -->
+            <div class="body-streak-bar">
+                <div class="body-streak-item">
+                    <div class="body-streak-dot"></div>
+                    <span>STREAK: <span class="body-streak-val" id="b-streak">0D</span></span>
+                </div>
+                <div class="body-streak-item">
+                    TITAN FASTS: <span class="body-streak-val" id="b-streak-fasts">0/100</span>
+                </div>
+                <div class="body-streak-item">
+                    AVG GAP: <span class="body-streak-val" id="b-streak-avg-gap">--</span>
+                </div>
+                <div style="margin-left:auto;display:flex;gap:0.75rem;">
+                    <button id="b-open-log" style="background:linear-gradient(135deg,#d4af37,#aa801d);border:none;color:#000;font-weight:700;padding:0.55rem 1.4rem;font-size:0.82rem;box-shadow:0 3px 12px rgba(212,175,55,0.3);">+ LOG HEAVY <span class="log-kbd">W</span></button>
+                    <button id="b-open-settings" style="background:transparent;border:1px solid rgba(212,175,55,0.4);color:#d4af37;">⚙ Config</button>
+                </div>
+            </div>
+
+            <!-- Top Stats -->
+            <div class="body-top-row">
+                <div class="body-stat-block bsb--gold">
+                    <div class="bsb-label">Current Mass</div>
+                    <div class="bsb-value gold" id="b-current-weight">0.0</div>
+                    <div class="bsb-sub" id="b-unit-label">pounds</div>
+                </div>
+                <div class="body-stat-block">
+                    <div class="bsb-label">Mission Start</div>
+                    <div class="bsb-value" id="b-start-weight">--</div>
+                    <div class="bsb-sub" id="b-mission-start-date">--</div>
+                </div>
+                <div class="body-stat-block">
+                    <div class="bsb-label">Target Mass</div>
+                    <div class="bsb-value green" id="b-goal-weight">--</div>
+                    <div class="bsb-sub">goal weight</div>
+                </div>
+            </div>
+
+            <!-- Progress -->
+            <div class="section">
+                <div class="section-head"><h2>Mission Progress</h2></div>
+                <div class="body-progress-layout">
+                    <div class="body-ring-wrap">
+                        <svg viewBox="0 0 160 160">
+                            <circle cx="80" cy="80" r="66" stroke="rgba(167,139,250,0.1)" stroke-width="12" fill="none"/>
+                            <circle id="b-ring-fill" cx="80" cy="80" r="66"
+                                stroke="#d4af37" stroke-width="12" fill="none"
+                                stroke-dasharray="414.69" stroke-dashoffset="414.69"
+                                stroke-linecap="round"
+                                style="transition:stroke-dashoffset 1s var(--ease);filter:drop-shadow(0 0 6px rgba(212,175,55,0.5))"/>
+                        </svg>
+                        <div class="body-ring-center">
+                            <div class="body-ring-pct" id="b-percent-text">0%</div>
+                            <div class="body-ring-lbl">CRUSHED</div>
+                        </div>
+                    </div>
+                    <div class="body-progress-stats">
+                        <div class="prog-block">
+                            <div class="prog-block-label">Remaining</div>
+                            <div class="prog-block-val gold" id="b-weight-remaining">--</div>
+                            <div id="b-to-goal-label" style="font-size:0.6rem;color:var(--dimmed);margin-top:3px;font-family:var(--ff-h);letter-spacing:0.1em;">LBS TO GOAL</div>
+                        </div>
+                        <div class="prog-block">
+                            <div class="prog-block-label">BMI</div>
+                            <div class="prog-block-val" id="b-bmi">--</div>
+                            <div id="b-bmi-badge" style="display:inline-block;margin-top:6px;padding:4px 10px;border-radius:99px;font-size:0.62rem;font-weight:800;letter-spacing:0.12em;background:var(--bg-card);color:var(--muted);">—</div>
+                        </div>
+                        <div class="prog-block prog-bar-block">
+                            <div class="prog-block-label">Completion</div>
+                            <div class="prog-bar-track">
+                                <div id="b-linear-progress" class="prog-bar-fill" style="width:0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Goal Prediction -->
+            <div class="section" id="b-prediction-section">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;">
+                    <div style="font-family:var(--ff-h);font-size:1rem;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.08em;">Goal Prediction</div>
+                    <div id="b-pred-badge" class="pred-badge pred-badge--gold">CALCULATING</div>
+                </div>
+                <div class="pred-card">
+                    <div class="pred-card-main">
+                        <div class="pred-eta-label">Estimated Achievement Date</div>
+                        <div class="pred-eta-date" id="b-pred-date">—</div>
+                    </div>
+                    <div class="pred-stats-row">
+                        <div class="pred-stat">
+                            <div class="pred-stat-val" id="b-pred-rate">—</div>
+                            <div class="pred-stat-label" id="b-pred-rate-lbl">LBS / WEEK</div>
+                        </div>
+                        <div class="pred-stat pred-stat--center">
+                            <div class="pred-stat-val gold" id="b-pred-days">—</div>
+                            <div class="pred-stat-label">DAYS LEFT</div>
+                        </div>
+                        <div class="pred-stat pred-stat--right">
+                            <div class="pred-stat-val" id="b-pred-conf">—</div>
+                            <div class="pred-stat-label">CONFIDENCE</div>
+                        </div>
+                    </div>
+                    <div class="pred-timeline-wrap" id="b-pred-timeline"></div>
+                </div>
+            </div>
+
+            <!-- Vitals -->
+            <div class="section">
+                <div class="section-head"><h2>Titan Vitals</h2></div>
+                <div class="body-vitals-grid">
+                    <div class="vital-block">
+                        <div class="vital-block-label">Titan Fasts</div>
+                        <div class="vital-block-val gold" id="b-fasting-counter">0</div>
+                        <div class="fast-bar-wrap">
+                            <div class="fast-frac" id="b-fast-fraction">0 / 100</div>
+                            <div class="fast-track"><div class="fast-fill" id="b-fast-fill" style="width:0%"></div></div>
+                        </div>
+                    </div>
+                    <div class="vital-block">
+                        <div class="vital-block-label">Avg Fast Gap</div>
+                        <div class="vital-block-val" id="b-avg-fast-gap">--</div>
+                        <div class="vital-block-sub">days between</div>
+                    </div>
+                    <div class="vital-block">
+                        <div class="vital-block-label">Total Lost</div>
+                        <div class="vital-block-val green" id="b-total-lost">0.0</div>
+                        <div class="vital-block-sub">lbs dropped</div>
+                    </div>
+                    <div class="vital-block">
+                        <div class="vital-block-label">Log Entries</div>
+                        <div class="vital-block-val" id="b-logs-count">0</div>
+                        <div class="vital-block-sub">total data</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="section">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.7rem;">
+                    <div style="font-family:var(--ff-h);font-size:1rem;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.08em;">Mass Trajectory</div>
+                    <div class="range-tabs">
+                        <button class="range-tab b-range-tab" data-range="7">7D</button>
+                        <button class="range-tab b-range-tab" data-range="30">30D</button>
+                        <button class="range-tab b-range-tab active" data-range="all">ALL</button>
+                    </div>
+                </div>
+                <div class="body-chart-wrap" style="font-family:'Roboto',sans-serif;color:#fbbf24;">
+                    <canvas id="b-main-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Calendar -->
+            <div class="section">
+                <div class="body-cal-header">
+                    <div style="font-family:var(--ff-h);font-size:1rem;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.08em;">Iron Calendar</div>
+                    <div class="body-cal-nav">
+                        <button class="body-cal-nav-btn" id="b-cal-prev">◀</button>
+                        <div class="body-cal-month" id="b-cal-month-lbl">---</div>
+                        <button class="body-cal-nav-btn" id="b-cal-next">▶</button>
+                    </div>
+                </div>
+                <div class="body-cal-dow">
+                    <div class="body-dow-cell">SUN</div><div class="body-dow-cell">MON</div>
+                    <div class="body-dow-cell">TUE</div><div class="body-dow-cell">WED</div>
+                    <div class="body-dow-cell">THU</div><div class="body-dow-cell">FRI</div>
+                    <div class="body-dow-cell">SAT</div>
+                </div>
+                <div id="b-cal-grid" class="body-cal-grid"></div>
+                <div class="body-cal-legend">
+                    <div class="bcal-legend-item"><div class="bcal-dot" style="background:var(--mint)"></div>LOSS</div>
+                    <div class="bcal-legend-item"><div class="bcal-dot" style="background:#d4af37"></div>SMALL GAIN</div>
+                    <div class="bcal-legend-item"><div class="bcal-dot" style="background:var(--danger)"></div>HEAVY GAIN</div>
+                    <div class="bcal-legend-item"><div class="bcal-dot" style="background:#d4af37;opacity:0.35"></div>⚡ TITAN FAST</div>
+                </div>
+            </div>
+
+            <!-- ── Measurements ── -->
+            <!-- Stubs — controls & history moved to Vault › Body module -->
+            <button id="b-toggle-history" style="display:none;" aria-hidden="true"></button>
+            <div id="b-history-section" style="display:none;" aria-hidden="true"></div>
+
+        </div><!-- /tab-body -->
+
+        <!-- ══════════════════ METRICS TAB ══════════════════ -->
+        <div id="tab-metrics" class="tab-section">
+
+            <div class="tab-bg tab-bg--metrics" aria-hidden="true">
+                <div class="tbg-m-orb tbg-m-orb--1"></div>
+                <div class="tbg-m-orb tbg-m-orb--2"></div>
+                <div class="tbg-m-grid"></div>
+            </div>
+
+            <div class="section meas-section">
+
+                <div class="meas-hero">
+                    <div class="meas-hero-eyebrow">Body Composition</div>
+                    <div class="meas-hero-title">MEASUREMENTS</div>
+                    <div class="meas-hero-sub">Track dimensions · Reveal the physique</div>
+                </div>
+
+                <div class="meas-stats-grid" id="m-stats-grid"></div>
+
+                <div class="meas-divider">
+                    <div class="meas-divider-line"></div>
+                    <div class="meas-divider-label">Log &amp; History</div>
+                    <div class="meas-divider-line"></div>
+                </div>
+
+                <div class="meas-main-row">
+
+                    <!-- Form -->
+                    <div class="meas-form-card">
+                        <div class="meas-form-title"><span>◈</span> Log Measurements</div>
+
+                        <div class="meas-form-row">
+                            <label class="meas-form-label">Date</label>
+                            <input type="date" id="m-date" class="meas-input">
+                        </div>
+                        <div class="meas-form-row">
+                            <label class="meas-form-label">Body Fat %</label>
+                            <input type="number" id="m-bodyfat" class="meas-input" step="0.1" min="0" max="60" placeholder="e.g. 15.5">
+                        </div>
+                        <div class="meas-form-row">
+                            <label class="meas-form-label">Dimensions (cm)</label>
+                            <div class="meas-dims-grid">
+                                <div>
+                                    <label class="meas-form-label" style="font-size:.53rem">Chest</label>
+                                    <input type="number" id="m-chest" class="meas-input" step="0.1" placeholder="cm">
+                                </div>
+                                <div>
+                                    <label class="meas-form-label" style="font-size:.53rem">Waist</label>
+                                    <input type="number" id="m-waist" class="meas-input" step="0.1" placeholder="cm">
+                                </div>
+                                <div>
+                                    <label class="meas-form-label" style="font-size:.53rem">Biceps</label>
+                                    <input type="number" id="m-biceps" class="meas-input" step="0.1" placeholder="cm">
+                                </div>
+                                <div>
+                                    <label class="meas-form-label" style="font-size:.53rem">Thighs</label>
+                                    <input type="number" id="m-thighs" class="meas-input" step="0.1" placeholder="cm">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="meas-form-row">
+                            <label class="meas-form-label">Notes (Optional)</label>
+                            <textarea id="m-notes" class="meas-input" style="resize:vertical;min-height:68px;" placeholder="Diet notes, how you feel..."></textarea>
+                        </div>
+                        <button id="m-save-btn" class="meas-save-btn">▶ SAVE MEASUREMENTS</button>
+
+                        <div class="meas-chart-wrap">
+                            <div class="meas-chart-title">Body Fat % Trend</div>
+                            <div class="meas-chart-canvas-wrap">
+                                <canvas id="m-bf-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- History -->
+                    <div class="meas-history-card">
+                        <div class="meas-history-head">
+                            <div class="meas-history-title">History</div>
+                            <div class="meas-history-actions">
+                                <button class="meas-act-btn" id="m-export-btn">↓ Export</button>
+                                <button class="meas-act-btn danger" id="m-clear-btn">✕ Clear</button>
+                            </div>
+                        </div>
+                        <div class="meas-history-list" id="m-history-list">
+                            <div class="meas-empty-state">No measurements yet.<br>Log your first entry.</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div><!-- /tab-metrics -->
+
+        <!-- ══════════════════ VAULT TAB ══════════════════ -->
+        <div id="tab-vault" class="tab-section">
+
+            <div class="tab-bg tab-bg--vault" aria-hidden="true">
+                <div class="tbg-v-nebula tbg-v-nebula--1"></div>
+                <div class="tbg-v-nebula tbg-v-nebula--2"></div>
+                <div class="tbg-v-nebula tbg-v-nebula--3"></div>
+                <div class="tbg-v-hex"></div>
+                <div class="tbg-v-scanline"></div>
+            </div>
+
+            <!-- Hero -->
+            <div class="vault-hero">
+                <div class="vault-hero-eyebrow">◈ DATA ARCHIVE ◈</div>
+                <div class="vault-hero-title">VAULT</div>
+                <div class="vault-hero-sub">Strength &amp; Cardio Intelligence</div>
+            </div>
+
+            <!-- ─── Strength Module ─── -->
+            <div class="vault-module vault-module--strength">
+                <button class="vault-module-header" aria-expanded="false">
+                    <div class="vault-mod-icon-wrap">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 6.5h11M6.5 17.5h11M3 10h18M3 14h18"/></svg>
+                    </div>
+                    <div class="vault-mod-info">
+                        <span class="vault-mod-label">Strength</span>
+                        <span class="vault-mod-count">History · Personal Records · Storage Access</span>
+                    </div>
+                    <div class="vault-toggle-btn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+                    </div>
+                </button>
+                <div class="vault-module-body" hidden>
+                    <div class="vault-subtabs">
+                        <button class="vault-subtab active" data-pane="vs-history">History</button>
+                        <button class="vault-subtab" data-pane="vs-pr">Personal Records</button>
+                        <button class="vault-subtab" data-pane="vs-storage">Storage Access</button>
+                    </div>
+                    <!-- History pane -->
+                    <div class="vault-pane active" id="vs-history">
+                        <div class="filter-bar" style="margin-bottom:1rem;">
+                            <select id="filterExercise"><option value="">All Exercises</option></select>
+                            <select id="filterRange">
+                                <option value="all">All Time</option>
+                                <option value="week">This Week</option>
+                                <option value="month">This Month</option>
+                            </select>
+                        </div>
+                        <p id="historyEmpty" class="empty-state" style="display:none;">No workouts logged yet — add your first set above!</p>
+                        <table id="workoutLog">
+                            <thead>
+                                <tr>
+                                    <th>Date</th><th>Exercise</th><th>Weight (lbs)</th>
+                                    <th>Sets</th><th>Reps/Sec</th><th>RPE</th><th>Volume</th><th>Notes</th><th></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <!-- Personal Records pane -->
+                    <div class="vault-pane" id="vs-pr">
+                        <div id="prTable"></div>
+                    </div>
+                    <!-- Storage Access pane -->
+                    <div class="vault-pane" id="vs-storage">
+                        <div class="vault-storage-grid">
+                            <button id="s-export-btn" class="vault-storage-btn vault-storage-btn--export">
+                                <span class="vault-storage-btn-icon">⬇</span>
+                                <span>Export Data</span>
+                            </button>
+                            <label class="vault-storage-btn vault-storage-btn--import" style="cursor:pointer;">
+                                <span class="vault-storage-btn-icon">⬆</span>
+                                <span>Import Data</span>
+                                <input type="file" id="s-import-input" accept=".json" style="display:none">
+                            </label>
+                            <button id="s-wipe-btn" class="vault-storage-btn vault-storage-btn--wipe">
+                                <span class="vault-storage-btn-icon">🗑</span>
+                                <span>Clear Data</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── Cardio Module ─── -->
+            <div class="vault-module vault-module--cardio">
+                <button class="vault-module-header" aria-expanded="false">
+                    <div class="vault-mod-icon-wrap">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h2l2-6 4 12 3-7 2 4h4"/></svg>
+                    </div>
+                    <div class="vault-mod-info">
+                        <span class="vault-mod-label">Cardio</span>
+                        <span class="vault-mod-count">Session History · Personal Records · Storage Access</span>
+                    </div>
+                    <div class="vault-toggle-btn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+                    </div>
+                </button>
+                <div class="vault-module-body" hidden>
+                    <div class="vault-subtabs">
+                        <button class="vault-subtab active" data-pane="vc-history">Session History</button>
+                        <button class="vault-subtab" data-pane="vc-pr">Personal Records</button>
+                        <button class="vault-subtab" data-pane="vc-storage">Storage Access</button>
+                    </div>
+                    <!-- Session History pane -->
+                    <div class="vault-pane active" id="vc-history">
+                        <div style="display:flex;justify-content:center;margin-bottom:1.2rem;">
+                            <button id="c-open-panel" style="background:linear-gradient(135deg,var(--sky),var(--mint));border:none;color:#0d0b1a;font-weight:700;padding:0.75rem 2.2rem;font-size:0.9rem;box-shadow:0 4px 16px rgba(56,189,248,0.28);">
+                                + Add Cardio Session
+                            </button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th><th>Week</th><th>Activity</th>
+                                    <th>Duration</th><th>Distance</th><th>Calories</th><th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="c-table-body"></tbody>
+                        </table>
+                    </div>
+                    <!-- Personal Records pane -->
+                    <div class="vault-pane" id="vc-pr">
+                        <div class="vault-pr-grid">
+                            <div class="vault-pr-card">
+                                <span class="vault-pr-card-label">Longest Session</span>
+                                <span class="vault-pr-card-val" id="c-pr-longest">—</span>
+                            </div>
+                            <div class="vault-pr-card">
+                                <span class="vault-pr-card-label">Max Calories</span>
+                                <span class="vault-pr-card-val" id="c-pr-maxcal">—</span>
+                            </div>
+                            <div class="vault-pr-card">
+                                <span class="vault-pr-card-label">Max Distance</span>
+                                <span class="vault-pr-card-val" id="c-pr-maxdist">—</span>
+                            </div>
+                            <div class="vault-pr-card">
+                                <span class="vault-pr-card-label">Best Weekly Streak</span>
+                                <span class="vault-pr-card-val" id="c-pr-streak">—</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Storage Access pane -->
+                    <div class="vault-pane" id="vc-storage">
+                        <div class="vault-storage-grid">
+                            <button id="c-export" class="vault-storage-btn vault-storage-btn--export">
+                                <span class="vault-storage-btn-icon">⬇</span>
+                                <span>Export Data</span>
+                            </button>
+                            <label class="vault-storage-btn vault-storage-btn--import" style="cursor:pointer;">
+                                <span class="vault-storage-btn-icon">⬆</span>
+                                <span>Import Data</span>
+                                <input type="file" id="c-import-input" accept=".json" style="display:none">
+                            </label>
+                            <button id="c-clear-btn" class="vault-storage-btn vault-storage-btn--wipe">
+                                <span class="vault-storage-btn-icon">🗑</span>
+                                <span>Clear Sessions</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── Body Module ─── -->
+            <div class="vault-module vault-module--body">
+                <button class="vault-module-header" aria-expanded="false">
+                    <div class="vault-mod-icon-wrap">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 10c-5 0-8 2.5-8 5v1h16v-1c0-2.5-3-5-8-5z"/></svg>
+                    </div>
+                    <div class="vault-mod-info">
+                        <span class="vault-mod-label">Body</span>
+                        <span class="vault-mod-count">Weight Log · Storage Access</span>
+                    </div>
+                    <div class="vault-toggle-btn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+                    </div>
+                </button>
+                <div class="vault-module-body" hidden>
+                    <div class="vault-subtabs">
+                        <button class="vault-subtab active" data-pane="vb-log">Weight Log</button>
+                        <button class="vault-subtab" data-pane="vb-storage">Storage Access</button>
+                    </div>
+                    <!-- Weight Log pane -->
+                    <div class="vault-pane active" id="vb-log">
+                        <div style="overflow-x:auto;border:1px solid var(--bdr);border-radius:var(--r2);">
+                            <table class="body-history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th><th>Mass (lbs)</th><th>Type</th>
+                                        <th>Delta</th><th>Notes</th><th style="text-align:right">—</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="b-history-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Storage Access pane -->
+                    <div class="vault-pane" id="vb-storage">
+                        <div class="vault-storage-grid">
+                            <button id="b-export" class="vault-storage-btn vault-storage-btn--export">
+                                <span class="vault-storage-btn-icon">⬇</span>
+                                <span>Export Data</span>
+                            </button>
+                            <button id="b-import-btn" class="vault-storage-btn vault-storage-btn--import">
+                                <span class="vault-storage-btn-icon">⬆</span>
+                                <span>Import Data</span>
+                            </button>
+                            <button id="b-wipe" class="vault-storage-btn vault-storage-btn--wipe">
+                                <span class="vault-storage-btn-icon">🗑</span>
+                                <span>Wipe Data</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /tab-vault -->
+
+        <!-- ══════════════════ SYSTEM TAB ══════════════════ -->
+        <div id="tab-system" class="tab-section">
+
+            <div class="tab-bg tab-bg--system" aria-hidden="true">
+                <div class="tbg-sys-orb tbg-sys-orb--1"></div>
+                <div class="tbg-sys-orb tbg-sys-orb--2"></div>
+                <div class="tbg-sys-grid"></div>
+            </div>
+
+            <!-- Settings Hero -->
+            <div class="settings-hero">
+                <div class="settings-hero-icon">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </div>
+                <div>
+                    <div class="settings-hero-title">Settings</div>
+                    <div class="settings-hero-sub">System &amp; Account Controls</div>
+                </div>
+                <div class="settings-hero-badge">Titan Crew</div>
+            </div>
+
+            <!-- Control Cards -->
+            <div class="settings-grid">
+
+                <!-- Weight Units -->
+                <div class="sc sc--sky">
+                    <div class="sc-head">
+                        <div class="sc-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12M6 12h12M6 17h12"/><circle cx="3.5" cy="7"  r="1.5"/><circle cx="3.5" cy="12" r="1.5"/><circle cx="3.5" cy="17" r="1.5"/></svg>
+                        </div>
+                        <span class="sc-badge">UNITS</span>
+                    </div>
+                    <div class="sc-name">Weight Units</div>
+                    <div class="sc-desc">Choose lbs or kg for all volume totals, PR cards, and 1RM estimates.</div>
+                    <div class="unit-toggle">
+                        <button id="unitLbs" class="unit-toggle-btn active" type="button">lbs</button>
+                        <button id="unitKg"  class="unit-toggle-btn"        type="button">kg</button>
+                    </div>
+                </div>
+
+                <!-- Sign Out -->
+                <div class="sc sc--violet">
+                    <div class="sc-head">
+                        <div class="sc-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        </div>
+                        <span class="sc-badge">SAFE</span>
+                    </div>
+                    <div class="sc-name">Sign Out</div>
+                    <div class="sc-desc">End your current session and return to the login screen.</div>
+                    <button type="button" id="btnSignOut" class="sc-btn">Sign Out →</button>
+                </div>
+
+                <!-- Hard Sign Out -->
+                <div class="sc sc--amber">
+                    <div class="sc-head">
+                        <div class="sc-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        </div>
+                        <span class="sc-badge">FORCE</span>
+                    </div>
+                    <div class="sc-name">Hard Sign Out</div>
+                    <div class="sc-desc">Clears all auth tokens and cached state. Use if session is stuck.</div>
+                    <button type="button" id="btnSignOutHard" class="sc-btn">Hard Sign Out →</button>
+                </div>
+
+                <!-- Clear All Data -->
+                <div class="sc sc--danger">
+                    <div class="sc-head">
+                        <div class="sc-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                        </div>
+                        <span class="sc-badge">DESTRUCTIVE</span>
+                    </div>
+                    <div class="sc-name">Clear All Data</div>
+                    <div class="sc-desc">Permanently wipes all workout history. This action cannot be undone.</div>
+                    <button type="button" id="btnWipe" class="sc-btn">Wipe Data ⚠</button>
+                </div>
+
+            </div>
+
+        </div><!-- /tab-system -->
+
+        <!-- ══════════════════ WORKOUT TAB ══════════════════ -->
+        <div id="tab-workout" class="tab-section">
+
+            <div class="tab-bg tab-bg--workout" aria-hidden="true">
+                <div class="tbg-w-orb tbg-w-orb--1"></div>
+                <div class="tbg-w-orb tbg-w-orb--2"></div>
+            </div>
+
+            <!-- Plan header (hidden when no plan loaded) -->
+            <div id="wk-header-bar" class="wk-header-bar wk-hidden">
+                <div class="wk-header-left">
+                    <div class="wk-header-title" id="wk-plan-name">—</div>
+                    <div class="wk-header-date" id="wk-plan-date">—</div>
+                </div>
+                <div class="wk-header-right">
+                    <div class="wk-progress-wrap">
+                        <div class="wk-progress-bg">
+                            <div class="wk-progress-bar" id="wk-progress-bar" style="width:0%"></div>
+                        </div>
+                        <div class="wk-progress-label" id="wk-progress-label">0 / 0 sets</div>
+                    </div>
+                    <button id="wk-clear-btn" class="wk-clear-btn">✕ Clear</button>
+                </div>
+            </div>
+
+            <!-- Exercises checklist -->
+            <div id="wk-content" class="wk-content"></div>
+
+            <!-- Add Exercise footer (always visible in Workout tab) -->
+            <div class="wk-footer">
+                <button id="wk-add-ex-btn" class="wk-add-ex-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add Exercise
+                </button>
+            </div>
+
+        </div><!-- /tab-workout -->
+
+    </div><!-- .page-wrap -->
+
+    <!-- Exercise Panel -->
+    <div class="ex-panel-overlay" id="ex-panel-overlay"></div>
+    <div class="ex-panel" id="ex-panel">
+        <div class="ex-panel-head">
+            <div class="ex-panel-title" id="ex-panel-title">Add Exercise</div>
+            <button class="ex-panel-close" id="ex-panel-close">✕</button>
+        </div>
+        <div class="ex-panel-body">
+            <div style="margin-bottom:1.2rem;">
+                <label style="display:block;font-family:var(--ff-h);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.5rem;">Exercise Name *</label>
+                <input type="text" id="ex-name" placeholder="e.g. Bench Press" autocomplete="off">
+            </div>
+            <div style="margin-bottom:1.2rem;">
+                <label style="display:block;font-family:var(--ff-h);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.5rem;">Sets × Reps *</label>
+                <input type="text" id="ex-sets" placeholder="e.g. 3×10 or 4×8-12" autocomplete="off">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.9rem;margin-bottom:1.2rem;">
+                <div>
+                    <label style="display:block;font-family:var(--ff-h);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.5rem;">Rest (seconds)</label>
+                    <input type="number" id="ex-rest" min="0" placeholder="90">
+                </div>
+                <div>
+                    <label style="display:block;font-family:var(--ff-h);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.5rem;">Progression</label>
+                    <input type="text" id="ex-prog" placeholder="e.g. +5 lbs" autocomplete="off">
+                </div>
+            </div>
+            <div style="display:flex;gap:0.75rem;margin-top:0.4rem;">
+                <button id="ex-save-btn" style="flex:1;background:linear-gradient(135deg,#f59e0b,#ef4444);border:none;color:#0d0b1a;font-weight:700;font-family:var(--ff-h);letter-spacing:0.06em;padding:0.85rem;border-radius:var(--r2);cursor:pointer;">Save Exercise</button>
+                <button id="ex-cancel-btn" style="flex:1;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cardio Slide Panel -->
+    <div class="c-panel-overlay" id="c-panel-overlay"></div>
+    <div class="c-panel" id="c-panel">
+        <div class="c-panel-head">
+            <div class="c-panel-title">Add Session</div>
+            <button class="c-panel-close" id="c-panel-close">✕</button>
+        </div>
+        <div class="c-panel-body">
+            <div class="form-group" style="margin-bottom:1.2rem;">
+                <label style="display:block;font-family:var(--ff-h);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.5rem;">Date</label>
+                <input type="date" id="c-date">
+            </div>
+            <div class="form-group" style="margin-bottom:1.2rem;">
+                <label style="display:block;font-family:var(--ff-h);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.5rem;">Activity</label>
+                <select id="c-activity">
+                    <option value="Treadmill">Treadmill</option>
+                    <option value="Elliptical">Elliptical</option>
+                    <option value="Swimming">Swimming</option>
+                    <option value="Walking">Walking</option>
+                </select>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.9rem;margin-bottom:1.2rem;">
+                <div class="form-group">
+                    <label style="display:block;font-family:var(--ff-h);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.5rem;">Duration (min)</label>
+                    <input type="number" id="c-duration" min="1" placeholder="30">
+                </div>
+                <div class="form-group">
+                    <label style="display:block;font-family:var(--ff-h);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.5rem;">Distance (mi)</label>
+                    <input type="number" id="c-distance" step="0.01" min="0" placeholder="1.5">
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom:1.8rem;">
+                <label style="display:block;font-family:var(--ff-h);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.5rem;">Calories</label>
+                <input type="number" id="c-calories" min="1" placeholder="300">
+            </div>
+            <div style="display:flex;gap:0.75rem;">
+                <button id="c-save-btn" style="flex:1;background:linear-gradient(135deg,var(--sky),var(--mint));border:none;color:#0d0b1a;font-weight:700;padding:0.85rem;">Save Session</button>
+                <button id="c-reset-btn" style="flex:1;">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Body: Log Modal -->
+    <div id="b-add-modal" class="body-modal-overlay">
+        <div data-backdrop style="position:absolute;inset:0;"></div>
+        <div class="body-modal">
+            <div class="body-modal-title">LOG HEAVY</div>
+            <div class="body-modal-sub">Record daily mass & fasting status</div>
+            <div class="body-form-group">
+                <label class="body-form-label">Weight (lbs)</label>
+                <input type="number" id="b-input-weight" step="0.1" class="body-form-input big-input" placeholder="0.0">
+            </div>
+            <div class="fast-toggle-row">
+                <div>
+                    <div class="fast-toggle-info-name">⚡ TITAN FAST</div>
+                    <div class="fast-toggle-info-desc">19+ hours fasted today?</div>
+                </div>
+                <label class="toggle-wrap">
+                    <input type="checkbox" id="b-input-fasting">
+                    <span class="toggle-track"></span>
+                </label>
+            </div>
+            <div class="body-form-group">
+                <label class="body-form-label">Note (Optional)</label>
+                <input type="text" id="b-input-note" class="body-form-input" placeholder="crushed it...">
+            </div>
+            <div class="body-modal-actions">
+                <button id="b-save-entry" class="btn-gold">SAVE LOG</button>
+                <button data-close>CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Body: Settings Modal -->
+    <div id="b-settings-modal" class="body-modal-overlay">
+        <div data-backdrop style="position:absolute;inset:0;"></div>
+        <div class="body-modal">
+            <div class="body-modal-title">PARAMETERS</div>
+            <div class="body-modal-sub">Configure aesthetic baseline</div>
+            <div class="body-form-group">
+                <label class="body-form-label">Mission Start Date</label>
+                <input type="date" id="b-set-mission-date" class="body-form-input">
+                <div style="font-size:0.65rem;color:var(--muted);margin-top:6px;font-family:var(--ff-h);letter-spacing:0.1em;">DATE YOU BEGAN THE MISSION</div>
+            </div>
+            <div class="body-form-group">
+                <label class="body-form-label">Start Mass (lbs)</label>
+                <input type="number" id="b-set-start" class="body-form-input" step="0.1">
+            </div>
+            <div class="body-form-group">
+                <label class="body-form-label">Current Weight (lbs)</label>
+                <input type="number" id="b-set-current" class="body-form-input" step="0.1" placeholder="Auto from latest log">
+                <div style="font-size:0.65rem;color:var(--muted);margin-top:6px;font-family:var(--ff-h);letter-spacing:0.1em;">LEAVE BLANK TO USE LATEST LOG ENTRY</div>
+            </div>
+            <div class="body-form-group">
+                <label class="body-form-label">Goal Mass (lbs)</label>
+                <input type="number" id="b-set-goal" class="body-form-input" step="0.1">
+            </div>
+            <div class="body-form-group">
+                <label class="body-form-label">Height (inches)</label>
+                <input type="number" id="b-set-height" class="body-form-input" placeholder="e.g. 75 for 6'3&quot;">
+                <div style="font-size:0.65rem;color:var(--muted);margin-top:6px;font-family:var(--ff-h);letter-spacing:0.1em;">REQUIRED FOR BMI CALCULATION</div>
+            </div>
+            <div class="body-modal-actions">
+                <button id="b-save-settings" class="btn-gold">UPDATE</button>
+                <button data-close>CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Body FAB (shown only when Body tab is active) -->
+
+    <!-- Heatmap Tooltip -->
+    <div class="hm-tooltip" id="c-hm-tooltip"></div>
+
+    <!-- Log a Set Sidebar -->
+    <div class="log-overlay" id="log-overlay"></div>
+    <div class="log-panel" id="log-panel">
+        <div class="log-panel-head">
+            <div class="log-panel-title">Log a Set</div>
+            <button class="log-panel-close" id="log-panel-close">✕</button>
+        </div>
+        <div class="log-panel-body">
+            <form onsubmit="return false;">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="workoutDate">Date</label>
+                        <input type="date" id="workoutDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="muscleGroup">Program Day</label>
+                        <select id="muscleGroup" required>
+                            <option value="">Select day</option>
+                            <option value="day1">Day 1 – Chest + Triceps</option>
+                            <option value="day2">Day 2 – Back + Biceps</option>
+                            <option value="day3">Day 3 – Legs + Core</option>
+                            <option value="day4">Day 4 – Shoulders + Triceps</option>
+                            <option value="day5">Day 5 – Back + Chest</option>
+                            <option value="day6">Day 6 – Cardio + Metabolic</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exercise">Exercise</label>
+                        <select id="exercise" required><option value="">Select a day first</option></select>
+                    </div>
+                    <div class="form-group" id="customExGroup" style="display:none;">
+                        <label for="customExercise">Custom Exercise</label>
+                        <input type="text" id="customExercise" placeholder="Type exercise name" list="exercise-history" autocomplete="off">
+                        <datalist id="exercise-history"></datalist>
+                    </div>
+                    <div class="form-group form-group--wide" id="last-hint-wrap" style="display:none;padding-top:0;">
+                        <div id="last-session-hint" class="last-hint"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="weight">Weight (lbs)</label>
+                        <input type="number" id="weight" min="0" step="0.5" placeholder="0 for bodyweight" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sets">Sets</label>
+                        <input type="number" id="sets" min="1" max="20" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reps">Reps (or sec)</label>
+                        <input type="number" id="reps" min="1" max="999" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="rpe">RPE (1–10)</label>
+                        <input type="number" id="rpe" min="1" max="10" step="0.5" placeholder="Optional">
+                    </div>
+                    <div class="form-group form-group--wide">
+                        <label for="notes">Notes</label>
+                        <input type="text" id="notes" placeholder="Optional notes for this set">
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button type="button" id="btnLog">Log Set</button>
+                    <button type="button" id="btnLoadPlan" class="btn-plan">Load Plan</button>
+                    <button type="button" id="btnDownloadTemplate" class="btn-template" title="Download plan template">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="12" y1="11" x2="12" y2="17"/>
+                            <polyline points="9 14 12 17 15 14"/>
+                        </svg>
+                        <span>Template</span>
+                    </button>
+                    <input type="file" id="planFileInput" accept=".json" style="display:none;">
+                </div>
+            </form>
+            <div id="planPanel" class="plan-panel" hidden></div>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Modal -->
+    <div id="shortcuts-modal" class="shortcuts-overlay" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
+        <div class="shortcuts-panel">
+            <div class="shortcuts-head">
+                <div class="shortcuts-head-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M18 14h.01M10 14h4"/></svg>
+                    Keyboard Shortcuts
+                    <span class="shortcuts-head-badge">Ctrl + /</span>
+                </div>
+                <button class="shortcuts-close-btn" id="shortcuts-close" aria-label="Close">✕</button>
+            </div>
+            <div class="shortcuts-body">
+                <!-- Navigation -->
+                <div>
+                    <div class="sc-group-label">Navigation</div>
+                    <div class="sc-row">
+                        <span class="sc-keys"><kbd>Ctrl</kbd><span class="sc-plus">+</span><kbd>1</kbd></span>
+                        <span class="sc-desc">Strength</span>
+                    </div>
+                    <div class="sc-row">
+                        <span class="sc-keys"><kbd>Ctrl</kbd><span class="sc-plus">+</span><kbd>2</kbd></span>
+                        <span class="sc-desc">Cardio</span>
+                    </div>
+                    <div class="sc-row">
+                        <span class="sc-keys"><kbd>Ctrl</kbd><span class="sc-plus">+</span><kbd>3</kbd></span>
+                        <span class="sc-desc">Weight</span>
+                    </div>
+                    <div class="sc-row">
+                        <span class="sc-keys"><kbd>Ctrl</kbd><span class="sc-plus">+</span><kbd>4</kbd></span>
+                        <span class="sc-desc">Metrics</span>
+                    </div>
+                    <div class="sc-row">
+                        <span class="sc-keys"><kbd>Ctrl</kbd><span class="sc-plus">+</span><kbd>5</kbd></span>
+                        <span class="sc-desc">Vault</span>
+                    </div>
+                    <div class="sc-row">
+                        <span class="sc-keys"><kbd>Ctrl</kbd><span class="sc-plus">+</span><kbd>6</kbd></span>
+                        <span class="sc-desc">Workout</span>
+                    </div>
+                    <div class="sc-row">
+                        <span class="sc-keys"><kbd>Ctrl</kbd><span class="sc-plus">+</span><kbd>7</kbd></span>
+                        <span class="sc-desc">Settings</span>
+                    </div>
+                    <div class="sc-row">
+                        <span class="sc-keys"><kbd class="sc-kbd--mint">P</kbd></span>
+                        <span class="sc-desc">Workout (quick)</span>
+                    </div>
+                </div>
+                <!-- Actions -->
+                <div>
+                    <div class="sc-group-label">Actions</div>
+                    <div class="sc-row">
+                        <span class="sc-keys"><kbd class="sc-kbd--amber">S</kbd></span>
+                        <span class="sc-desc">Log a Set</span>
+                    </div>
+                    <div class="sc-row">
+                        <span class="sc-keys"><kbd class="sc-kbd--sky">C</kbd></span>
+                        <span class="sc-desc">Log Cardio</span>
+                    </div>
+                    <div class="sc-row">
+                        <span class="sc-keys"><kbd class="sc-kbd--gold">W</kbd></span>
+                        <span class="sc-desc">Log Heavy</span>
+                    </div>
+                    <div class="sc-group-label" style="margin-top:1rem;">Help</div>
+                    <div class="sc-row">
+                        <span class="sc-keys"><kbd>Ctrl</kbd><span class="sc-plus">+</span><kbd>/</kbd></span>
+                        <span class="sc-desc">This panel</span>
+                    </div>
+                    <div class="sc-row">
+                        <span class="sc-keys"><kbd>Esc</kbd></span>
+                        <span class="sc-desc">Close panel</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+    <script>
+        // ── Date Chip ──
+        (function () {
+            var M = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+            var D = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+            var n = new Date();
+            document.getElementById('dcMonth').textContent = M[n.getMonth()];
+            document.getElementById('dcDay').textContent   = String(n.getDate()).padStart(2,'0');
+            document.getElementById('dcDow').textContent   = D[n.getDay()];
+        })();
+
+        (function () {
+            // ── Vault module accordion ──
+            document.querySelectorAll('.vault-module-header').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var expanded = btn.getAttribute('aria-expanded') === 'true';
+                    btn.setAttribute('aria-expanded', String(!expanded));
+                    var body = btn.nextElementSibling;
+                    if (expanded) body.setAttribute('hidden', '');
+                    else body.removeAttribute('hidden');
+                });
+            });
+
+            // ── Vault sub-tab switching ──
+            document.querySelectorAll('.vault-subtab').forEach(function (tab) {
+                tab.addEventListener('click', function () {
+                    var paneId = tab.getAttribute('data-pane');
+                    var mod = tab.closest('.vault-module');
+                    mod.querySelectorAll('.vault-subtab').forEach(function (t) { t.classList.remove('active'); });
+                    mod.querySelectorAll('.vault-pane').forEach(function (p) { p.classList.remove('active'); });
+                    tab.classList.add('active');
+                    var pane = document.getElementById(paneId);
+                    if (pane) pane.classList.add('active');
+                });
+            });
+        })();
+    </script>
+
+    <!-- ── Bottom Navigation Bar (mobile) ── -->
+    <nav class="bottom-nav" role="tablist" aria-label="App navigation">
+
+        <button class="bnav-btn active" data-tab="strength" role="tab" aria-selected="true" aria-label="Strength">
+            <div class="bnav-indicator"></div>
+            <svg class="bnav-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6.5 6.5h11M6.5 17.5h11M3 10h18M3 14h18"/>
+            </svg>
+            <span class="bnav-label">Strength</span>
+        </button>
+
+        <button class="bnav-btn" data-tab="cardio" role="tab" aria-selected="false" aria-label="Cardio">
+            <div class="bnav-indicator"></div>
+            <svg class="bnav-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 12h2l2-6 4 12 3-7 2 4h4"/>
+            </svg>
+            <span class="bnav-label">Cardio</span>
+        </button>
+
+        <button class="bnav-btn" data-tab="body" role="tab" aria-selected="false" aria-label="Weight">
+            <div class="bnav-indicator"></div>
+            <svg class="bnav-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 10c-5 0-8 2.5-8 5v1h16v-1c0-2.5-3-5-8-5z"/>
+            </svg>
+            <span class="bnav-label">Weight</span>
+        </button>
+
+        <button class="bnav-btn" data-tab="metrics" role="tab" aria-selected="false" aria-label="Metrics">
+            <div class="bnav-indicator"></div>
+            <svg class="bnav-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 4-4"/>
+            </svg>
+            <span class="bnav-label">Metrics</span>
+        </button>
+
+        <button class="bnav-btn" data-tab="vault" role="tab" aria-selected="false" aria-label="Vault">
+            <div class="bnav-indicator"></div>
+            <svg class="bnav-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M12 9v1M12 14v1M9 12h1M14 12h1"/>
+                <path d="M19 8h2M19 16h2"/>
+            </svg>
+            <span class="bnav-label">Vault</span>
+        </button>
+
+        <button class="bnav-btn" data-tab="workout" role="tab" aria-selected="false" aria-label="Workout">
+            <div class="bnav-indicator"></div>
+            <svg class="bnav-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                <path d="M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z"/>
+                <path d="m9 12 2 2 4-4"/>
+            </svg>
+            <span class="bnav-label">Workout</span>
+        </button>
+
+        <button class="bnav-btn" data-tab="system" role="tab" aria-selected="false" aria-label="Settings">
+            <div class="bnav-indicator"></div>
+            <svg class="bnav-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="7" y="7" width="10" height="10" rx="1.5"/>
+                <path d="M7 9.5H4.5M7 12H4.5M7 14.5H4.5M17 9.5h2.5M17 12h2.5M17 14.5h2.5M9.5 7V4.5M12 7V4.5M14.5 7V4.5M9.5 17v2.5M12 17v2.5M14.5 17v2.5"/>
+            </svg>
+            <span class="bnav-label">Settings</span>
+        </button>
+
+    </nav>
+
+</body>
+</html>

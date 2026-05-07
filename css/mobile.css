@@ -1,0 +1,498 @@
+/* ═══════════════════════════════════════════════════════
+   MOBILE  — bottom nav bar + responsive layout polish
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Bottom Navigation Bar ──────────────────────────────
+   Hidden on desktop; revealed at ≤ 768 px via the
+   @media block below.
+   ─────────────────────────────────────────────────────── */
+.bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 490;
+    align-items: stretch;
+    justify-content: space-around;
+
+    background: rgba(13, 11, 26, 0.82);
+    backdrop-filter: blur(28px) saturate(1.5);
+    -webkit-backdrop-filter: blur(28px) saturate(1.5);
+    border-top: 1px solid rgba(167, 139, 250, 0.14);
+    box-shadow:
+        0 -2px 24px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(167, 139, 250, 0.07);
+
+    /* top padding + safe-area for phones with home indicator */
+    padding: 0.28rem 0.15rem;
+    padding-bottom: calc(0.28rem + env(safe-area-inset-bottom));
+}
+
+/* Subtle gradient line at the very top of the bar */
+.bottom-nav::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 6%;
+    right: 6%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(167, 139, 250, 0.38) 30%,
+        rgba(255, 107, 157, 0.22) 60%,
+        transparent
+    );
+    pointer-events: none;
+}
+
+/* ── Nav Button ─────────────────────────────────────────── */
+.bnav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.22rem;
+    padding: 0.45rem 0.1rem 0.32rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    border-radius: 12px;
+    min-height: 56px;
+    transition: all 0.2s var(--ease);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+}
+
+/* Press ripple */
+.bnav-btn::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 10px;
+    background: transparent;
+    transition: background 0.14s;
+}
+.bnav-btn:active::after {
+    background: rgba(167, 139, 250, 0.1);
+}
+
+/* ── Active indicator pill (top edge) ──────────────────── */
+.bnav-indicator {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    width: 22px;
+    height: 3px;
+    border-radius: 99px;
+    background: var(--violet);
+    transform: translateX(-50%) scaleX(0);
+    transform-origin: center;
+    transition: transform 0.28s var(--spring), background 0.2s;
+    pointer-events: none;
+}
+
+.bnav-btn.active .bnav-indicator {
+    transform: translateX(-50%) scaleX(1);
+}
+
+/* ── Icon ───────────────────────────────────────────────── */
+.bnav-icon {
+    width: 23px;
+    height: 23px;
+    stroke: var(--muted);
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+    transition: stroke 0.2s, transform 0.26s var(--spring);
+}
+
+.bnav-btn.active .bnav-icon {
+    stroke: var(--violet);
+    transform: translateY(-2px) scale(1.1);
+}
+
+/* ── Label ──────────────────────────────────────────────── */
+.bnav-label {
+    font-family: var(--ff-h);
+    font-size: 0.5rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color 0.2s;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.bnav-btn.active .bnav-label {
+    color: var(--violet);
+}
+
+/* ── Per-tab accent colours ─────────────────────────────── */
+/* strength — violet (default, already set above) */
+
+/* cardio — sky */
+.bnav-btn[data-tab="cardio"].active .bnav-indicator { background: var(--sky); }
+.bnav-btn[data-tab="cardio"].active .bnav-icon      { stroke: var(--sky); }
+.bnav-btn[data-tab="cardio"].active .bnav-label     { color: var(--sky); }
+
+/* body — amber */
+.bnav-btn[data-tab="body"].active .bnav-indicator   { background: var(--amber); }
+.bnav-btn[data-tab="body"].active .bnav-icon        { stroke: var(--amber); }
+.bnav-btn[data-tab="body"].active .bnav-label       { color: var(--amber); }
+
+/* metrics — violet/sky */
+.bnav-btn[data-tab="metrics"].active .bnav-indicator { background: #38bdf8; }
+.bnav-btn[data-tab="metrics"].active .bnav-icon      { stroke: #38bdf8; }
+.bnav-btn[data-tab="metrics"].active .bnav-label     { color: #38bdf8; }
+
+/* vault — violet (same as strength but listed for clarity) */
+.bnav-btn[data-tab="vault"].active .bnav-indicator  { background: #a78bfa; }
+.bnav-btn[data-tab="vault"].active .bnav-icon       { stroke: #a78bfa; }
+.bnav-btn[data-tab="vault"].active .bnav-label      { color: #a78bfa; }
+
+/* workout — amber/orange */
+.bnav-btn[data-tab="workout"].active .bnav-indicator { background: #f59e0b; }
+.bnav-btn[data-tab="workout"].active .bnav-icon      { stroke: #f59e0b; }
+.bnav-btn[data-tab="workout"].active .bnav-label     { color: #f59e0b; }
+
+/* system — indigo */
+.bnav-btn[data-tab="system"].active .bnav-indicator { background: #6366f1; }
+.bnav-btn[data-tab="system"].active .bnav-icon      { stroke: #6366f1; }
+.bnav-btn[data-tab="system"].active .bnav-label     { color: #6366f1; }
+
+
+/* ════════════════════════════════════════════════════════
+   RESPONSIVE OVERRIDES  ≤ 768 px
+   ════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+    /* ── Activate bottom nav, kill top nav ─────────────── */
+    .bottom-nav { display: flex; }
+    .tab-nav    { display: none !important; }
+
+    /* ── Body / Page wrapper ────────────────────────────── */
+    /* overflow-x on html (not body) prevents mobile browsers from
+       treating body as a scroll container, which can clip position:fixed
+       elements like the session bar */
+    html { overflow-x: hidden; }
+    body {
+        padding: 0.75rem;
+        padding-bottom: 0;
+    }
+
+    /* Clear the bottom nav + safe area at the bottom of scroll */
+    .page-wrap {
+        padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+    }
+
+    /* ── Tab-section entrance animation on mobile ──────── */
+    .tab-section.active {
+        animation: mobileTabIn 0.22s var(--ease) both;
+    }
+
+    @keyframes mobileTabIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0);   }
+    }
+
+    /* ── Hero ───────────────────────────────────────────── */
+    .hero {
+        padding: 1rem 0.25rem 0.6rem;
+    }
+    .hero-icon-wrap {
+        display: none;
+    }
+    .hero h1 {
+        font-size: clamp(1.75rem, 7.5vw, 2.8rem);
+        letter-spacing: 0.15em;
+    }
+    .hero .tagline {
+        font-size: 0.7rem;
+        line-height: 1.5;
+        letter-spacing: 0.04em;
+        padding: 0 0.5rem;
+    }
+    /* trim heavy animated elements to keep mobile smooth */
+    .hg-rays   { display: none; }
+    .hg-ring--3 { display: none; }
+    .geo-shape { display: none; }
+
+    /* ── Time Strip ─────────────────────────────────────── */
+    .time-strip {
+        gap: 0.38rem;
+        margin-bottom: 0.9rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .time-pill {
+        padding: 0.42rem 0.65rem;
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+    .time-pill-label { font-size: 0.48rem; }
+    .time-pill-value { font-size: 0.75rem; }
+
+    /* ── Fixed UI widgets ───────────────────────────────── */
+    /* Date chip is redundant on mobile (phones show date natively) */
+    .date-chip-wrap { display: none; }
+
+    /* PST clock: hidden on mobile */
+    .pst-clock { display: none; }
+
+    /* Session bar: hidden on mobile */
+    .session-bar { display: none; }
+
+    /* ── Toast: above bottom nav ────────────────────────── */
+    .toast {
+        bottom: calc(4.5rem + env(safe-area-inset-bottom));
+        right: 0.75rem;
+        left: 0.75rem;
+        max-width: none;
+        text-align: center;
+    }
+
+    /* ── FAB (Body): above bottom nav ───────────────────── */
+    .body-fab {
+        bottom: calc(4.5rem + env(safe-area-inset-bottom) + 0.75rem);
+        right: 0.75rem;
+        width: 52px;
+        height: 52px;
+        font-size: 1.3rem;
+    }
+
+    /* ── Bento grid: single column ─────────────────────── */
+    .bento {
+        grid-template-columns: 1fr;
+        gap: 0.7rem;
+    }
+
+    /* ── Metric cards ───────────────────────────────────── */
+    .metric-card {
+        padding: 1rem 1.1rem;
+    }
+    .metric-value { font-size: 2rem; }
+
+    /* ── Section headers / filter bars ─────────────────── */
+    .section-header {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .section-title { font-size: 0.9rem; }
+    .filter-bar    { flex-wrap: wrap; gap: 0.45rem; }
+
+    /* ── Tables: allow horizontal scroll on narrow screens  */
+    .log-table-wrap,
+    .body-history-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* ── Cardio & Body grids ────────────────────────────── */
+    .cardio-stats          { grid-template-columns: repeat(2, 1fr); }
+    .cardio-visual-row     { grid-template-columns: 1fr; }
+    .body-top-row          { grid-template-columns: 1fr; }
+    .body-vitals-grid      { grid-template-columns: 1fr 1fr; }
+
+    /* ══ VAULT — full mobile overhaul ════════════════════
+       Using #tab-vault prefix to beat the inline <style>
+       declarations in index.html (specificity: 0,1,1,0
+       wins over 0,0,1,0 on equal cascade position).
+       ═════════════════════════════════════════════════ */
+
+    /* ── Vault hero: strip down to a compact title bar ─ */
+    #tab-vault .vault-hero {
+        padding: 0.5rem 0 0.75rem;
+    }
+    #tab-vault .vault-hero-eyebrow {
+        font-size: 0.46rem;
+        letter-spacing: 0.28em;
+        margin-bottom: 0.3rem;
+    }
+    #tab-vault .vault-hero-title {
+        font-size: 2rem;
+        letter-spacing: 0.18em;
+    }
+    #tab-vault .vault-hero-sub {
+        font-size: 0.52rem;
+        letter-spacing: 0.14em;
+        margin-top: 0.3rem;
+    }
+
+    /* ── Module card ────────────────────────────────── */
+    #tab-vault .vault-module {
+        border-radius: 14px;
+        margin-bottom: 0.85rem;
+    }
+    /* Disable hover lift — touch devices don't hover */
+    #tab-vault .vault-module:hover {
+        transform: none;
+    }
+
+    /* ── Module header ──────────────────────────────── */
+    #tab-vault .vault-module-header {
+        padding: 0.85rem 0.95rem 0.75rem;
+        gap: 0.65rem;
+    }
+    #tab-vault .vault-mod-icon-wrap {
+        width: 40px;
+        height: 40px;
+        border-radius: 11px;
+        flex-shrink: 0;
+    }
+    #tab-vault .vault-mod-icon-wrap svg {
+        width: 18px;
+        height: 18px;
+    }
+    #tab-vault .vault-mod-label {
+        font-size: 0.95rem;
+        letter-spacing: 0.08em;
+    }
+    #tab-vault .vault-mod-count {
+        font-size: 0.51rem;
+        letter-spacing: 0.08em;
+        /* clip long description text on narrow screens */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 52vw;
+    }
+    #tab-vault .vault-toggle-btn {
+        width: 28px;
+        height: 28px;
+        flex-shrink: 0;
+    }
+
+    /* ── Sub-tabs: horizontally scrollable strip ─────
+       Long labels ("Session History", "Personal Records",
+       "Storage Access") would wrap or overflow at narrow
+       widths — make the strip scroll instead.           */
+    #tab-vault .vault-subtabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding: 0 0.8rem;
+        flex-wrap: nowrap;
+    }
+    #tab-vault .vault-subtabs::-webkit-scrollbar {
+        display: none;
+    }
+    #tab-vault .vault-subtab {
+        white-space: nowrap;
+        flex-shrink: 0;
+        padding: 0.6rem 0.85rem;
+        font-size: 0.64rem;
+        letter-spacing: 0.1em;
+    }
+
+    /* ── Pane content: tighter padding ─────────────── */
+    #tab-vault .vault-pane {
+        padding: 0.85rem 0.9rem 1rem;
+    }
+
+    /* ── Strength history: stack filters, scroll table  */
+    #vs-history .filter-bar {
+        flex-direction: column;
+        gap: 0.45rem;
+    }
+    #vs-history .filter-bar select {
+        width: 100%;
+    }
+    /* Make the table element itself scroll as a block,
+       preserving the thead/tbody semantic structure.   */
+    #vs-history table,
+    #vc-history table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    #vs-history thead, #vs-history tbody,
+    #vc-history thead, #vc-history tbody {
+        display: table;
+        min-width: 480px;
+        width: 100%;
+    }
+
+    /* "Add Cardio Session" button: full-width tap target */
+    #vc-history > div:first-child {
+        width: 100%;
+    }
+    #c-open-panel {
+        width: 100%;
+        border-radius: 12px;
+    }
+
+    /* ── PR cards: 2-column grid ────────────────────── */
+    #tab-vault .vault-pr-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.55rem;
+    }
+    #tab-vault .vault-pr-card {
+        padding: 0.7rem 0.85rem;
+        border-radius: 11px;
+    }
+    #tab-vault .vault-pr-card-val {
+        font-size: 1.25rem;
+    }
+    #tab-vault .vault-pr-card-label {
+        font-size: 0.53rem;
+    }
+    #tab-vault .vault-pr-card:hover {
+        transform: none;
+    }
+
+    /* ── Storage buttons: full-width horizontal rows ──
+       Switching from a 3-column icon-only grid to a
+       stacked list with icon + label side by side —
+       much easier to read and tap on mobile.          */
+    #tab-vault .vault-storage-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    #tab-vault .vault-storage-btn {
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 0.9rem 1.1rem;
+        border-radius: 12px;
+        text-align: left;
+        min-height: 52px;
+    }
+    #tab-vault .vault-storage-btn-icon {
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+    #tab-vault .vault-storage-btn:hover {
+        transform: none;
+    }
+
+    /* Settings cards */
+    .settings-grid         { grid-template-columns: 1fr; }
+    .settings-hero         { padding: 1.2rem 0; }
+    .settings-hero-title   { font-size: 1.4rem; }
+
+    /* Auth overlay inputs – 16 px prevents iOS zoom on focus */
+    .auth-input { font-size: 1rem; }
+}
+
+/* ════════════════════════════════════════════════════════
+   EXTRA-SMALL  ≤ 400 px  (SE, older Android)
+   ════════════════════════════════════════════════════════ */
+@media (max-width: 400px) {
+    .bnav-label  { font-size: 0.44rem; letter-spacing: 0.07em; }
+    .bnav-icon   { width: 20px; height: 20px; }
+    .bnav-btn    { min-height: 52px; }
+
+    body  { padding: 0.5rem; padding-bottom: 0; }
+    .hero h1 { font-size: 1.6rem; letter-spacing: 0.1em; }
+    .hero .tagline { font-size: 0.65rem; }
+
+    .cardio-stats { grid-template-columns: 1fr 1fr; }
+}

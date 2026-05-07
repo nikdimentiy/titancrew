@@ -1,0 +1,520 @@
+/* ── Workout Tab ─────────────────────────────────────────────────────────────── */
+
+.wk-hidden { display: none !important; }
+
+/* Background */
+.tab-bg--workout {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+.tbg-w-orb--1 {
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(251,191,36,0.14) 0%, transparent 68%);
+}
+.tbg-w-orb--2 {
+    position: absolute;
+    bottom: -80px;
+    left: -80px;
+    width: 360px;
+    height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(239,68,68,0.10) 0%, transparent 68%);
+}
+
+/* ── Header Bar ─────────────────────────── */
+.wk-header-bar {
+    background: var(--bg-card);
+    border: 1px solid var(--bdr);
+    border-radius: var(--r3);
+    padding: 1.1rem 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.2rem;
+    margin-bottom: 1.4rem;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+}
+.wk-header-bar::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, #f59e0b, #ef4444);
+    border-radius: 99px 0 0 99px;
+}
+
+.wk-header-left { display: flex; flex-direction: column; gap: 0.2rem; }
+
+.wk-header-title {
+    font-family: var(--ff-h);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    background: linear-gradient(90deg, #f59e0b, #ef4444);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.wk-header-date {
+    font-family: var(--ff-h);
+    font-size: 0.68rem;
+    color: var(--muted);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.wk-header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.wk-progress-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 170px;
+}
+
+.wk-progress-bg {
+    height: 7px;
+    background: rgba(245,158,11,0.12);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.wk-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #f59e0b, #ef4444);
+    border-radius: 99px;
+    transition: width 0.5s var(--ease, cubic-bezier(.4,0,.2,1));
+}
+
+.wk-progress-label {
+    font-family: var(--ff-h);
+    font-size: 0.63rem;
+    color: var(--muted);
+    letter-spacing: 0.07em;
+    text-align: right;
+}
+
+.wk-clear-btn {
+    background: transparent;
+    border: 1px solid var(--bdr);
+    color: var(--muted);
+    font-family: var(--ff-h);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    padding: 0.38rem 0.9rem;
+    border-radius: var(--r4);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+}
+.wk-clear-btn:hover { border-color: var(--coral); color: var(--coral); }
+
+/* ── Empty State ──────────────────────── */
+.wk-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.1rem;
+    padding: 5rem 2rem;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.wk-empty-icon {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(245,158,11,0.6);
+}
+
+.wk-empty-title {
+    font-family: var(--ff-h);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--dimmed);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.wk-empty-sub {
+    font-size: 0.8rem;
+    color: var(--muted);
+    max-width: 300px;
+    line-height: 1.65;
+}
+
+/* ── Content wrapper ──────────────────── */
+.wk-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Exercise Card ────────────────────── */
+.wk-exercise {
+    background: var(--bg-card);
+    border: 1px solid var(--bdr);
+    border-radius: var(--r3);
+    padding: 1.15rem 1.4rem;
+    transition: border-color 0.3s, background 0.3s;
+}
+
+.wk-exercise--done {
+    border-color: rgba(34,197,94,0.38);
+    background: rgba(34,197,94,0.035);
+}
+
+.wk-ex-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+}
+
+.wk-ex-num {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    color: #fff;
+    font-family: var(--ff-h);
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    box-shadow: 0 2px 8px rgba(245,158,11,0.35);
+}
+
+.wk-ex-info { flex: 1; min-width: 0; }
+
+.wk-ex-name {
+    font-family: var(--ff-h);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.38rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wk-ex-meta {
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.35rem;
+}
+
+.wk-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    border-radius: var(--r4);
+    font-family: var(--ff-h);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+.wk-badge--sets { background: rgba(245,158,11,0.14); color: #f59e0b; }
+.wk-badge--rest { background: rgba(56,189,248,0.12); color: var(--sky); }
+
+.wk-ex-prog {
+    font-size: 0.71rem;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.48;
+}
+
+.wk-ex-done-check {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(34,197,94,0.18);
+    border: 1px solid rgba(34,197,94,0.35);
+    color: #22c55e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.82rem;
+    flex-shrink: 0;
+    font-weight: 700;
+}
+
+/* ── Sets Row ─────────────────────────── */
+.wk-sets-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--bdr);
+}
+
+.wk-set {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--bg-input);
+    border: 1px solid var(--bdr);
+    border-radius: var(--r2);
+    padding: 0.45rem 0.65rem;
+    transition: border-color 0.2s;
+}
+
+.wk-set--done {
+    background: rgba(34,197,94,0.07);
+    border-color: rgba(34,197,94,0.3);
+    gap: 0.5rem;
+}
+
+.wk-set-label {
+    font-family: var(--ff-h);
+    font-size: 0.64rem;
+    color: var(--muted);
+    letter-spacing: 0.07em;
+    white-space: nowrap;
+}
+
+.wk-set-check {
+    color: #22c55e;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.wk-set-badge {
+    font-family: var(--ff-h);
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+.wk-set-logged {
+    font-family: var(--ff-h);
+    font-size: 0.78rem;
+    color: #22c55e;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+.wk-input {
+    width: 52px;
+    background: var(--bg-card);
+    border: 1px solid var(--bdr);
+    border-radius: var(--r1);
+    padding: 0.26rem 0.4rem;
+    font-size: 0.78rem;
+    color: var(--text);
+    font-family: inherit;
+    text-align: center;
+    transition: border-color 0.15s;
+}
+.wk-input:focus { outline: none; border-color: #f59e0b; }
+
+.wk-log-btn {
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    border: none;
+    border-radius: var(--r1);
+    color: #fff;
+    font-family: var(--ff-h);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 0.3rem 0.75rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.15s, transform 0.1s;
+    box-shadow: 0 2px 8px rgba(245,158,11,0.3);
+}
+.wk-log-btn:hover   { opacity: 0.88; }
+.wk-log-btn:active  { transform: scale(0.96); }
+
+/* ── Exercise action buttons ──────────── */
+.wk-ex-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.wk-ex-edit-btn,
+.wk-ex-del-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--bdr);
+    border-radius: var(--r1);
+    color: var(--muted);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+    padding: 0;
+    flex-shrink: 0;
+}
+.wk-ex-edit-btn:hover { border-color: #f59e0b; color: #f59e0b; background: rgba(245,158,11,0.08); }
+.wk-ex-del-btn:hover  { border-color: var(--coral); color: var(--coral); background: rgba(239,68,68,0.08); }
+
+/* ── Add Exercise footer ──────────────── */
+.wk-footer {
+    display: flex;
+    justify-content: center;
+    padding: 1.4rem 0 0.6rem;
+    position: relative;
+    z-index: 1;
+}
+
+.wk-add-ex-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: 1px dashed rgba(245,158,11,0.45);
+    color: rgba(245,158,11,0.8);
+    font-family: var(--ff-h);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 0.6rem 1.4rem;
+    border-radius: var(--r2);
+    cursor: pointer;
+    transition: border-color 0.18s, color 0.18s, background 0.18s;
+}
+.wk-add-ex-btn:hover {
+    border-color: #f59e0b;
+    color: #f59e0b;
+    background: rgba(245,158,11,0.07);
+}
+
+/* ── Exercise Slide Panel ─────────────── */
+.ex-panel-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 900;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s;
+}
+.ex-panel-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.ex-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(420px, 100vw);
+    height: 100%;
+    background: var(--bg-card);
+    border-left: 1px solid var(--bdr);
+    z-index: 901;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+    box-shadow: -8px 0 32px rgba(0,0,0,0.35);
+}
+.ex-panel.open { transform: translateX(0); }
+
+.ex-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 1.6rem;
+    border-bottom: 1px solid var(--bdr);
+    flex-shrink: 0;
+}
+
+.ex-panel-title {
+    font-family: var(--ff-h);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, #f59e0b, #ef4444);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.ex-panel-close {
+    background: transparent;
+    border: 1px solid var(--bdr);
+    color: var(--muted);
+    width: 30px;
+    height: 30px;
+    border-radius: var(--r1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    transition: border-color 0.15s, color 0.15s;
+}
+.ex-panel-close:hover { border-color: var(--coral); color: var(--coral); }
+
+.ex-panel-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.6rem;
+}
+
+.ex-panel-body input[type="text"],
+.ex-panel-body input[type="number"] {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--bg-input);
+    border: 1px solid var(--bdr);
+    border-radius: var(--r2);
+    padding: 0.6rem 0.85rem;
+    font-size: 0.88rem;
+    color: var(--text);
+    font-family: inherit;
+    transition: border-color 0.15s;
+}
+.ex-panel-body input:focus {
+    outline: none;
+    border-color: #f59e0b;
+}
+
+/* ── Responsive ───────────────────────── */
+@media (max-width: 640px) {
+    .wk-header-bar { padding: 0.9rem 1rem; gap: 0.8rem; }
+    .wk-exercise   { padding: 0.9rem 1rem; }
+    .wk-progress-wrap { min-width: 120px; }
+    .wk-sets-row { gap: 0.4rem; }
+    .wk-input { width: 44px; }
+    .ex-panel { width: 100vw; }
+}

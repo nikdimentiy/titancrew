@@ -1,0 +1,437 @@
+/* ── Auth Overlay ─────────────────────────────────────── */
+.auth-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background:
+        radial-gradient(ellipse at 18% 55%, rgba(110, 60, 230, 0.42) 0%, transparent 52%),
+        radial-gradient(ellipse at 80% 15%, rgba(255, 107, 157, 0.10) 0%, transparent 46%),
+        radial-gradient(ellipse at 68% 88%, rgba(48, 38, 110, 0.38) 0%, transparent 48%),
+        linear-gradient(148deg, #060412 0%, #120b2c 48%, #0b1122 100%);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 clamp(2rem, 10vw, 12rem);
+    overflow: hidden;
+}
+
+.auth-overlay.auth--exit {
+    animation: authExit 0.48s cubic-bezier(0.4, 0, 0.8, 1) forwards;
+    pointer-events: none;
+}
+
+@keyframes authExit {
+    0%   { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-28px) scale(1.025); }
+}
+
+/* ── Dot grid ─────────────────────────────────────────── */
+.auth-deco-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(167, 139, 250, 0.032) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(167, 139, 250, 0.032) 1px, transparent 1px);
+    background-size: 54px 54px;
+    pointer-events: none;
+}
+
+/* ── Vertical accent line ─────────────────────────────── */
+.auth-deco-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: clamp(2.5rem, 11vw, 13rem);
+    width: 1px;
+    background: linear-gradient(to bottom,
+        transparent 0%,
+        rgba(167, 139, 250, 0.20) 28%,
+        rgba(167, 139, 250, 0.20) 72%,
+        transparent 100%
+    );
+    pointer-events: none;
+}
+
+/* ── Stacked deco text: TITAN / CREW ──────────────────── */
+.auth-deco-word {
+    position: absolute;
+    right: -1.5vw;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--ff-h);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 0.85;
+    text-align: right;
+    user-select: none;
+    pointer-events: none;
+    animation: decoIn 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: 0.28s;
+}
+
+.auth-deco-word span {
+    display: block;
+    font-size: clamp(6.5rem, 17vw, 17rem);
+}
+
+.auth-deco-word span:first-child { color: rgba(167, 139, 250, 0.058); }
+.auth-deco-word span:last-child  { color: rgba(255, 107, 157, 0.040); }
+
+@keyframes decoIn {
+    from { opacity: 0; transform: translateX(55px) translateY(-50%); }
+    to   { opacity: 1; transform: translateX(0)    translateY(-50%); }
+}
+
+/* ── Geometric rings ──────────────────────────────────── */
+.auth-geo {
+    position: absolute;
+    right: 10%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 500px;
+    height: 500px;
+    pointer-events: none;
+}
+
+.auth-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 50%;
+}
+
+/* Ring 1 — medium violet circle, slow spin, has orbit dot */
+.auth-ring--1 {
+    width: 300px;
+    height: 300px;
+    border: 1px solid rgba(167, 139, 250, 0.16);
+    transform: translate(-50%, -50%);
+    animation: ringSpinCW 22s linear infinite;
+}
+
+.auth-ring--1::before {
+    content: '';
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    background: var(--violet);
+    opacity: 0.55;
+    border-radius: 50%;
+    top: -3.5px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 8px rgba(167, 139, 250, 0.7);
+}
+
+/* Ring 2 — large dashed coral circle, reverse */
+.auth-ring--2 {
+    width: 464px;
+    height: 464px;
+    border: 1px dashed rgba(255, 107, 157, 0.10);
+    transform: translate(-50%, -50%);
+    animation: ringSpinCCW 40s linear infinite;
+}
+
+/* Ring 3 — small sky circle, fast, has orbit dot */
+.auth-ring--3 {
+    width: 172px;
+    height: 172px;
+    border: 1px solid rgba(56, 189, 248, 0.14);
+    transform: translate(-50%, -50%);
+    animation: ringSpinCW 14s linear infinite;
+}
+
+.auth-ring--3::before {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: var(--sky);
+    opacity: 0.5;
+    border-radius: 50%;
+    bottom: -2.5px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
+}
+
+/* Ring 4 — diamond (square rotated 45°), amber accent dot */
+.auth-ring--4 {
+    width: 230px;
+    height: 230px;
+    border: 1px solid rgba(167, 139, 250, 0.09);
+    border-radius: 0;
+    transform: translate(-50%, -50%) rotate(45deg);
+    animation: ringDiamond 30s linear infinite;
+}
+
+.auth-ring--4::before {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: rgba(251, 191, 36, 0.6);
+    top: -2.5px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 6px rgba(251, 191, 36, 0.5);
+}
+
+@keyframes ringSpinCW {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes ringSpinCCW {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to   { transform: translate(-50%, -50%) rotate(-360deg); }
+}
+
+@keyframes ringDiamond {
+    from { transform: translate(-50%, -50%) rotate(45deg); }
+    to   { transform: translate(-50%, -50%) rotate(405deg); }
+}
+
+/* ── Floating geometric fragments ─────────────────────── */
+.auth-frag {
+    position: absolute;
+    pointer-events: none;
+    animation: fragFloat linear infinite;
+}
+
+/* triangle — left-centre */
+.auth-frag--1 {
+    width: 7px; height: 7px;
+    background: rgba(167, 139, 250, 0.48);
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+    top: 22%; left: 36%;
+    animation-duration: 9s;
+    animation-delay: 0s;
+}
+
+/* diamond — lower-left */
+.auth-frag--2 {
+    width: 5px; height: 5px;
+    background: rgba(255, 107, 157, 0.55);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    top: 68%; left: 25%;
+    animation-duration: 12s;
+    animation-delay: -3.5s;
+}
+
+/* square — upper-right area */
+.auth-frag--3 {
+    width: 5px; height: 5px;
+    background: rgba(56, 189, 248, 0.45);
+    top: 14%; left: 60%;
+    animation-duration: 7.5s;
+    animation-delay: -5s;
+    transform: rotate(28deg);
+}
+
+/* triangle — lower-right */
+.auth-frag--4 {
+    width: 6px; height: 6px;
+    background: rgba(167, 139, 250, 0.38);
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+    top: 76%; left: 62%;
+    animation-duration: 13s;
+    animation-delay: -2s;
+}
+
+/* diamond — mid-right */
+.auth-frag--5 {
+    width: 4px; height: 4px;
+    background: rgba(251, 191, 36, 0.45);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    top: 42%; left: 75%;
+    animation-duration: 10s;
+    animation-delay: -7s;
+}
+
+@keyframes fragFloat {
+    0%   { opacity: 0; transform: translateY(0)     rotate(0deg); }
+    14%  { opacity: 1; }
+    86%  { opacity: 0.9; }
+    100% { opacity: 0; transform: translateY(-55px) rotate(210deg); }
+}
+
+/* ── Auth card ────────────────────────────────────────── */
+.auth-card {
+    position: relative;
+    z-index: 1;
+    max-width: 380px;
+    width: 100%;
+    animation: cardIn 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: 0.08s;
+}
+
+@keyframes cardIn {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* eyebrow */
+.auth-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--ff-h);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: rgba(167, 139, 250, 0.7);
+    margin-bottom: 1.6rem;
+}
+
+.auth-eyebrow::before {
+    content: '';
+    width: 22px;
+    height: 1px;
+    background: rgba(167, 139, 250, 0.5);
+    flex-shrink: 0;
+}
+
+/* big editorial title */
+.auth-title {
+    font-family: var(--ff-h) !important;
+    font-size: clamp(4.5rem, 11vw, 7.5rem) !important;
+    font-weight: 700;
+    text-transform: uppercase !important;
+    letter-spacing: -0.02em !important;
+    line-height: 0.88;
+    margin-bottom: 2.8rem !important;
+    color: #ede9ff !important;
+}
+
+.auth-title em {
+    font-style: normal;
+    color: var(--violet);
+}
+
+/* fields with left-border grouping */
+.auth-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem;
+    margin-bottom: 0.75rem;
+    padding-left: 1.4rem;
+    border-left: 1px solid rgba(167, 139, 250, 0.2);
+}
+
+.auth-field { display: flex; flex-direction: column; gap: 0.28rem; }
+
+/* override global label */
+.auth-field-label {
+    font-family: var(--ff-h) !important;
+    font-size: 0.6rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.2em !important;
+    color: var(--muted) !important;
+    display: block;
+    margin-bottom: 0 !important;
+}
+
+/* underline-only inputs */
+.auth-input {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(167, 139, 250, 0.22) !important;
+    border-radius: 0 !important;
+    padding: 0.35rem 0 !important;
+    font-family: var(--ff-h) !important;
+    font-size: 1.1rem !important;
+    letter-spacing: 0.05em;
+    color: #ede9ff !important;
+    box-shadow: none !important;
+    transition: border-bottom-color 0.2s ease !important;
+}
+
+.auth-input:focus {
+    outline: none !important;
+    border-bottom-color: var(--violet) !important;
+    box-shadow: none !important;
+}
+
+/* error */
+.auth-error {
+    font-family: var(--ff-h);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--rose);
+    min-height: 1.2rem;
+    padding-left: 1.4rem;
+    margin-top: 0.6rem;
+    margin-bottom: 1.6rem;
+}
+
+/* rectangular border-only button */
+.auth-submit {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: transparent !important;
+    border: 1px solid rgba(167, 139, 250, 0.30) !important;
+    border-radius: 0 !important;
+    padding: 0.95rem 1.4rem !important;
+    color: #ede9ff !important;
+    font-family: var(--ff-h) !important;
+    font-size: 0.82rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease !important;
+    margin-bottom: 1.4rem;
+}
+
+.auth-submit:hover {
+    background: rgba(167, 139, 250, 0.09) !important;
+    border-color: var(--violet) !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.auth-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.auth-submit svg { flex-shrink: 0; }
+
+/* skip */
+.auth-skip {
+    background: none !important;
+    border: none !important;
+    color: rgba(136, 131, 168, 0.48) !important;
+    font-family: var(--ff-b) !important;
+    font-size: 0.75rem !important;
+    text-transform: none !important;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    padding: 0 !important;
+    transition: color 0.2s ease !important;
+    display: block;
+}
+
+.auth-skip:hover {
+    color: var(--muted) !important;
+    background: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* hint below skip */
+.auth-hint {
+    font-family: var(--ff-b);
+    font-size: 0.68rem;
+    color: rgba(136, 131, 168, 0.35);
+    margin-top: 0.75rem;
+    margin-bottom: 0;
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 640px) {
+    .auth-overlay  { padding: 0 1.5rem; }
+    .auth-deco-word, .auth-geo { display: none; }
+    .auth-deco-line { left: 2rem; }
+    .auth-title    { font-size: clamp(3.8rem, 16vw, 5.5rem) !important; margin-bottom: 2rem !important; }
+}
