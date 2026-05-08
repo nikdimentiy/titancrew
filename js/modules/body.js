@@ -14,12 +14,12 @@ let appData = {
     entries:         [],
 };
 
-let bodyChart    = null;
-let bfChart      = null;
-let calendarDate = new Date();
-let currentRange = 'all';
-let mData        = [];
-let _measCloud   = null;
+let bfChart            = null;
+let calendarDate       = new Date();
+let mData              = [];
+let _measCloud         = null;
+let _weightCloud       = null;
+let _bodySettingsCloud = null;
 
 const pad2 = n => String(n).padStart(2, '0');
 
@@ -48,7 +48,8 @@ function renderAll() {
     el('b-current-weight').textContent = toDisp(current).toFixed(1);
     el('b-start-weight').textContent   = toDisp(appData.startWeight).toFixed(1);
     el('b-goal-weight').textContent    = toDisp(appData.goalWeight).toFixed(1);
-    el('b-logs-count').textContent     = appData.entries.length;
+    const logsCountEl = el('b-logs-count');
+    if (logsCountEl) logsCountEl.textContent = appData.entries.length;
 
     const unitLbl = el('b-unit-label');
     if (unitLbl) unitLbl.textContent = unit === 'kg' ? 'kilograms' : 'pounds';
@@ -85,7 +86,6 @@ function renderAll() {
     calcFasting();
     calcPrediction();
     renderHistory();
-    renderBodyChart(currentRange);
     renderBodyCalendar();
 }
 
@@ -100,13 +100,20 @@ function calcBMI(weight) {
     } else {
         bmi = (weight / (h * h)) * 703;
     }
-    el('b-bmi').textContent = bmi.toFixed(1);
-    const badge = el('b-bmi-badge');
     let status = 'NORMAL', bg = 'rgba(52,211,153,0.15)', color = 'var(--mint)';
     if      (bmi < 18.5)             { status = 'UNDER'; bg = 'rgba(56,189,248,0.15)'; color = 'var(--sky)'; }
     else if (bmi >= 25 && bmi < 30)  { status = 'OVER';  bg = 'rgba(212,175,55,0.15)'; color = '#d4af37'; }
     else if (bmi >= 30)              { status = 'OBESE'; bg = 'rgba(248,113,113,0.15)'; color = 'var(--danger)'; }
+
+    const bmiVal = bmi.toFixed(1);
+    el('b-bmi').textContent = bmiVal;
+    const badge = el('b-bmi-badge');
     badge.textContent = status; badge.style.background = bg; badge.style.color = color;
+
+    const vBmi = el('b-vitals-bmi');
+    if (vBmi) vBmi.textContent = bmiVal;
+    const vBadge = el('b-vitals-bmi-badge');
+    if (vBadge) { vBadge.textContent = status; vBadge.style.background = bg; vBadge.style.color = color; }
 }
 
 // ── Streak ────────────────────────────────────────────────────────────────────
@@ -152,18 +159,24 @@ function calcPrediction() {
     const confEl = el('b-pred-conf');
     const badge  = el('b-pred-badge');
     const rateLbl = el('b-pred-rate-lbl');
+    const entryCountEl = el('b-pred-entry-count');
+    const rateDirectionEl = el('b-pred-rate-direction');
+    const confTextEl = el('b-pred-conf-text');
     if (!dateEl) return;
 
     const unit = getUnit();
     if (rateLbl) rateLbl.textContent = `${unit.toUpperCase()} / WEEK`;
+    if (entryCountEl) entryCountEl.textContent = appData.entries.length;
 
     const sorted = [...appData.entries].sort((a, b) => new Date(a.date) - new Date(b.date));
 
     if (sorted.length < 2) {
-        dateEl.textContent = 'Log more entries';
+        dateEl.textContent = 'Need more data';
         daysEl.textContent = '--';
         rateEl.textContent = '--';
         confEl.textContent = '--';
+        if (rateDirectionEl) rateDirectionEl.textContent = 'Start logging';
+        if (confTextEl) confTextEl.textContent = 'Need 2+ entries';
         if (badge) { badge.textContent = 'NEED DATA'; badge.className = 'pred-badge pred-badge--gold'; }
         renderPredTimeline(0, null);
         return;
@@ -182,8 +195,10 @@ function calcPrediction() {
     const denom = n * sumXX - sumX * sumX;
 
     if (denom === 0) {
-        dateEl.textContent = 'No change detected';
-        daysEl.textContent = '--'; rateEl.textContent = '0.0'; confEl.textContent = '--';
+        dateEl.textContent = 'No progress yet';
+        daysEl.textContent = '--'; rateEl.textContent = '0.0'; confEl.textContent = '—';
+        if (rateDirectionEl) rateDirectionEl.textContent = 'Maintain consistency';
+        if (confTextEl) confTextEl.textContent = 'No trend detected';
         if (badge) { badge.textContent = 'STALLED'; badge.className = 'pred-badge pred-badge--red'; }
         renderPredTimeline(0, null);
         return;
@@ -204,10 +219,12 @@ function calcPrediction() {
     const currentActual = sorted.length > 0 ? sorted[sorted.length - 1].weight : appData.startWeight;
     const alreadyDone   = isLossGoal ? currentActual <= goal : currentActual >= goal;
     if (alreadyDone) {
-        dateEl.textContent = 'ACHIEVED!';
+        dateEl.textContent = '✓ ACHIEVED';
         daysEl.textContent = '0';
         rateEl.textContent = toDisp(slope * 7).toFixed(1);
         confEl.textContent = '100%';
+        if (rateDirectionEl) rateDirectionEl.textContent = 'Mission complete!';
+        if (confTextEl) confTextEl.textContent = 'Perfect consistency';
         if (badge) { badge.textContent = 'ACHIEVED'; badge.className = 'pred-badge pred-badge--green'; }
         renderPredTimeline(100, null);
         return;
@@ -216,8 +233,10 @@ function calcPrediction() {
     // Check if moving in wrong direction
     const wrongDir = (isLossGoal && slope >= 0) || (!isLossGoal && slope <= 0);
     if (wrongDir) {
-        dateEl.textContent = 'Off track';
-        daysEl.textContent = '--'; rateEl.textContent = toDisp(slope * 7).toFixed(1); confEl.textContent = '--';
+        dateEl.textContent = 'Trend reversed';
+        daysEl.textContent = '--'; rateEl.textContent = toDisp(slope * 7).toFixed(1); confEl.textContent = '—';
+        if (rateDirectionEl) rateDirectionEl.textContent = 'Wrong direction';
+        if (confTextEl) confTextEl.textContent = 'Reverse trend';
         if (badge) { badge.textContent = 'OFF TRACK'; badge.className = 'pred-badge pred-badge--red'; }
         renderPredTimeline(0, null);
         return;
@@ -246,8 +265,20 @@ function calcPrediction() {
     rateEl.textContent = `${weeklyDisp >= 0 ? '+' : ''}${weeklyDisp.toFixed(1)}`;
     confEl.textContent = `${Math.round(r2 * 100)}%`;
 
+    // Rate direction description
+    const rateDirection = (isLossGoal && weeklyDisp < 0) || (!isLossGoal && weeklyDisp > 0) ? 'On pace' : 'Slow pace';
+    if (rateDirectionEl) rateDirectionEl.textContent = rateDirection;
+
+    // Confidence description
+    const confPercent = Math.round(r2 * 100);
+    let confDesc = 'Very consistent';
+    if (confPercent < 50) confDesc = 'Inconsistent pattern';
+    else if (confPercent < 70) confDesc = 'Somewhat consistent';
+    else if (confPercent < 90) confDesc = 'Very consistent';
+    if (confTextEl) confTextEl.textContent = confDesc;
+
     const rateColor = (isLossGoal && weeklyDisp < 0) || (!isLossGoal && weeklyDisp > 0) ? 'green' : 'red';
-    rateEl.className = `pred-stat-val ${rateColor}`;
+    rateEl.className = `pred-metric-val ${rateColor}`;
 
     // Badge: compare recent 7-entry rate vs overall slope
     if (badge) {
@@ -286,18 +317,13 @@ function renderPredTimeline(pct, currentActual) {
     wrap.innerHTML = `
         <div class="pred-timeline-bar">
             <div class="pred-timeline-fill" style="width:${p}%"></div>
-            <div class="pred-timeline-dot" style="left:${p}%"></div>
         </div>
         <div class="pred-tl-labels">
-            <div class="pred-tl-lbl" style="left:0;transform:translateX(0);">
+            <div class="pred-tl-lbl" style="left:0%;">
                 <div class="pred-tl-val">${toDisp(start).toFixed(1)}</div>
                 <div class="pred-tl-sub">START</div>
             </div>
-            <div class="pred-tl-lbl" style="left:${p}%;transform:translateX(-50%);">
-                <div class="pred-tl-val gold">${toDisp(current).toFixed(1)}</div>
-                <div class="pred-tl-sub">NOW</div>
-            </div>
-            <div class="pred-tl-lbl" style="right:0;transform:translateX(0);">
+            <div class="pred-tl-lbl" style="right:0%;">
                 <div class="pred-tl-val green">${toDisp(goal).toFixed(1)}</div>
                 <div class="pred-tl-sub">GOAL</div>
             </div>
@@ -327,47 +353,11 @@ function renderHistory() {
     tbody.querySelectorAll('[data-date]').forEach(btn => {
         btn.addEventListener('click', () => {
             if (!confirm('Delete this entry?')) return;
-            appData.entries = appData.entries.filter(e => e.date !== btn.dataset.date);
+            const dateToDelete = btn.dataset.date;
+            appData.entries = appData.entries.filter(e => e.date !== dateToDelete);
             saveData();
+            if (_weightCloud) _weightCloud.removeWeightEntry(dateToDelete).catch(() => {});
         });
-    });
-}
-
-// ── Chart ─────────────────────────────────────────────────────────────────────
-function renderBodyChart(range) {
-    const ctx = el('b-main-chart').getContext('2d');
-    if (bodyChart) { bodyChart.destroy(); bodyChart = null; }
-
-    let data = [...appData.entries].sort((a, b) => new Date(a.date) - new Date(b.date));
-    if (range !== 'all') {
-        const cutoff = new Date();
-        cutoff.setDate(cutoff.getDate() - parseInt(range));
-        data = data.filter(d => new Date(d.date) >= cutoff);
-    }
-
-    const labels = data.map(d => { const [,m,day] = d.date.split('-'); return `${m}/${day}`; });
-    const pts    = data.map(d => d.weight);
-
-    const grad = ctx.createLinearGradient(0, 0, 0, 280);
-    grad.addColorStop(0, 'rgba(212,175,55,0.35)');
-    grad.addColorStop(1, 'rgba(212,175,55,0.0)');
-
-    bodyChart = new Chart(ctx, {
-        type: 'line',
-        data: { labels, datasets: [{ label: `Mass (${getUnit()})`, data: pts, borderColor: '#d4af37', backgroundColor: grad, borderWidth: 2.5, pointBackgroundColor: '#0d0b1a', pointBorderColor: '#d4af37', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 7, fill: true, tension: 0.4 }] },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: { backgroundColor: 'var(--bg-card)', titleColor: 'var(--muted)', bodyColor: '#d4af37', borderColor: 'var(--bdr)', borderWidth: 1, padding: 10, displayColors: false,
-                    titleFont: { family: 'Roboto', size: 11, weight: '600' },
-                    bodyFont:  { family: 'Oswald',  size: 15, weight: '700' } }
-            },
-            scales: {
-                y: { grid: { color: 'rgba(167,139,250,0.06)' }, ticks: { color: 'var(--muted)', font: { family: 'Roboto', size: 11 } }, border: { color: 'var(--bdr)' } },
-                x: { grid: { display: false }, ticks: { color: 'var(--muted)', font: { family: 'Roboto', size: 11 } }, border: { color: 'var(--bdr)' } }
-            }
-        }
     });
 }
 
@@ -586,9 +576,23 @@ function closeBodyModal(id) { el(id).classList.remove('open'); }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 export function refreshBody()             { renderAll(); }
+export function setWeightCloud(c)        { _weightCloud = c; }
 export function setMeasCloud(c)          { _measCloud = c; }
+export function setBodySettingsCloud(c)  { _bodySettingsCloud = c; }
 export function getMeasData()            { return mData; }
+export function getWeightEntries()       { return appData.entries; }
+export function getBodySettings()        { return { startWeight: appData.startWeight, goalWeight: appData.goalWeight, height: appData.height, missionStartDate: appData.missionStartDate }; }
 export function syncMeasFromCloud(list)  { mData = list; localStorage.setItem(MK, JSON.stringify(mData)); renderMeas(); }
+export function syncWeightFromCloud(list) { appData.entries = list; localStorage.setItem(SK, JSON.stringify(appData)); saveData(); }
+export function applyBodySettings(s) {
+    if (!s) return;
+    if (s.startWeight)      appData.startWeight      = s.startWeight;
+    if (s.goalWeight)       appData.goalWeight        = s.goalWeight;
+    if (s.height)           appData.height            = s.height;
+    if (s.missionStartDate) appData.missionStartDate  = s.missionStartDate;
+    localStorage.setItem(SK, JSON.stringify(appData));
+    renderAll();
+}
 
 export function initBody() {
     const stored = localStorage.getItem(SK);
@@ -621,9 +625,11 @@ export function initBody() {
         if (!w) return;
         const dateStr = getLocalISO(new Date());
         appData.entries = appData.entries.filter(e => e.date !== dateStr);
-        appData.entries.push({ date: dateStr, weight: w, isFasting: f, note: n });
+        const entry = { date: dateStr, weight: w, isFasting: f, note: n };
+        appData.entries.push(entry);
         saveData(); closeBodyModal('b-add-modal');
         el('b-input-weight').value = ''; el('b-input-note').value = ''; el('b-input-fasting').checked = false;
+        if (_weightCloud) _weightCloud.upsertWeightEntry(entry).catch(() => {});
     });
 
     // Settings
@@ -658,16 +664,14 @@ export function initBody() {
         }
         saveData();
         closeBodyModal('b-settings-modal');
-    });
-
-    // Chart range
-    document.querySelectorAll('.b-range-tab').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.b-range-tab').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentRange = btn.dataset.range;
-            renderBodyChart(currentRange);
-        });
+        if (_bodySettingsCloud) {
+            _bodySettingsCloud.saveBodySettings({
+                startWeight:      appData.startWeight,
+                goalWeight:       appData.goalWeight,
+                height:           appData.height,
+                missionStartDate: appData.missionStartDate,
+            }).catch(() => {});
+        }
     });
 
     // Calendar nav
@@ -714,7 +718,9 @@ export function initBody() {
     // Clear
     el('b-wipe').addEventListener('click', () => {
         if (!confirm('Wipe all body data?')) return;
-        localStorage.removeItem(SK); location.reload();
+        localStorage.removeItem(SK);
+        if (_weightCloud) _weightCloud.wipeAllWeightEntries().catch(() => {});
+        location.reload();
     });
 
     renderAll();

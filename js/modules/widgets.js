@@ -62,18 +62,17 @@ export function setSyncStatus(state) {
 
 export function updateWeeklySummary(workoutData) {
     const now        = new Date();
-    const dayOfWeek  = now.getDay();
-    const daysFromMon = (dayOfWeek + 6) % 7;
-    const mon = new Date(now); mon.setDate(now.getDate() - daysFromMon); mon.setHours(0, 0, 0, 0);
-    const sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23, 59, 59, 999);
+    const dayOfWeek  = now.getDay(); // 0=Sun … 6=Sat
+    const sun = new Date(now); sun.setDate(now.getDate() - dayOfWeek); sun.setHours(0, 0, 0, 0);
+    const sat = new Date(sun); sat.setDate(sun.getDate() + 6); sat.setHours(23, 59, 59, 999);
 
-    const monISO = `${mon.getFullYear()}-${pad(mon.getMonth()+1)}-${pad(mon.getDate())}`;
     const sunISO = `${sun.getFullYear()}-${pad(sun.getMonth()+1)}-${pad(sun.getDate())}`;
+    const satISO = `${sat.getFullYear()}-${pad(sat.getMonth()+1)}-${pad(sat.getDate())}`;
 
     const periodEl = document.getElementById('ws-period');
-    if (periodEl) periodEl.textContent = `${fmt(mon)} – ${fmt(sun)}`;
+    if (periodEl) periodEl.textContent = `${fmt(sun)} – ${fmt(sat)}`;
 
-    const weekEntries = workoutData.filter(e => e.date >= monISO && e.date <= sunISO);
+    const weekEntries = workoutData.filter(e => e.date >= sunISO && e.date <= satISO);
     const sessions    = new Set(weekEntries.map(e => e.date)).size;
     const volume      = weekEntries.reduce((s, e) => s + (e.volume || 0), 0);
 
@@ -86,7 +85,7 @@ export function updateWeeklySummary(workoutData) {
     try {
         const cardioData = JSON.parse(localStorage.getItem('titan_cardio') || '[]');
         cardioMins = cardioData
-            .filter(c => c.date >= monISO && c.date <= sunISO)
+            .filter(c => c.date >= sunISO && c.date <= satISO)
             .reduce((s, c) => s + (Number(c.duration) || 0), 0);
     } catch { /* keep 0 */ }
     const cardioEl = document.getElementById('ws-cardio');
@@ -98,8 +97,8 @@ export function updateWeeklySummary(workoutData) {
         const bodyData = JSON.parse(localStorage.getItem('titan_body_v1') || 'null');
         if (bodyData?.entries?.length) {
             const sorted   = [...bodyData.entries].sort((a, b) => a.date.localeCompare(b.date));
-            const thisWeek = sorted.filter(e => e.date >= monISO && e.date <= sunISO);
-            const before   = sorted.filter(e => e.date < monISO);
+            const thisWeek = sorted.filter(e => e.date >= sunISO && e.date <= satISO);
+            const before   = sorted.filter(e => e.date < sunISO);
             const latest   = thisWeek.length ? thisWeek[thisWeek.length - 1].weight : null;
             const prev     = before.length   ? before[before.length - 1].weight     : null;
             if (latest !== null && prev !== null) {

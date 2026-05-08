@@ -7,6 +7,8 @@ export const CARDIO_COL         = 'cardio';
 export const PLANS_COL          = 'plans';
 export const WORKOUT_STATE_COL  = 'workout_state';
 export const MEASUREMENTS_COL   = 'measurements';
+export const WEIGHT_COL         = 'weight_entries';
+export const BODY_SETTINGS_COL  = 'body_settings';
 
 export const client = new Client()
     .setEndpoint('https://sfo.cloud.appwrite.io/v1')

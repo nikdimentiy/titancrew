@@ -7,7 +7,7 @@ import { showToast }                             from './modules/ui.js';
 import { savePlan, renderPlanPanel, setPlansCloud, getAllPlans, syncPlansFromCloud } from './modules/plan.js';
 import { initAuth, signOut, signOutHard } from './modules/auth.js';
 import { initCardio, openCardioPanel, setCardioCloud, getCardioWorkouts, syncCardioFromCloud } from './modules/cardio.js';
-import { initBody, refreshBody, setMeasCloud, getMeasData, syncMeasFromCloud } from './modules/body.js';
+import { initBody, refreshBody, setMeasCloud, setWeightCloud, setBodySettingsCloud, getMeasData, getWeightEntries, getBodySettings, syncMeasFromCloud, syncWeightFromCloud, applyBodySettings } from './modules/body.js';
 import { initWorkout, activatePlan, setWorkoutCloud, getWorkoutState, applyWorkoutState, refreshWorkout } from './modules/workout.js';
 
 // ── State ─────────────────────────────────────────────────────────────────────
@@ -302,6 +302,59 @@ initAuth(async user => {
         } catch { /* keep local measurements */ }
 
         setMeasCloud(cloud);
+
+        cloud.subscribeMeasurements(user.$id, (event, entry) => {
+            const current = getMeasData();
+            if (event === 'create') {
+                const i = current.findIndex(m => m.id === entry.id);
+                if (i >= 0) current[i] = entry; else current.push(entry);
+                syncMeasFromCloud(current);
+            } else if (event === 'delete') {
+                syncMeasFromCloud(current.filter(m => m.id !== entry.id));
+            }
+        });
+
+        // Weight entries cloud sync
+        try {
+            const cloudWeights    = await cloud.fetchWeightEntries();
+            const localWeights    = getWeightEntries();
+            const cloudDates      = new Set(cloudWeights.map(e => e.date));
+            const localOnlyW      = localWeights.filter(e => !cloudDates.has(e.date));
+            syncWeightFromCloud([...cloudWeights, ...localOnlyW]);
+            if (localOnlyW.length > 0) {
+                Promise.all(localOnlyW.map(e => cloud.upsertWeightEntry(e).catch(() => {}))).catch(() => {});
+            }
+        } catch { /* keep local weight entries */ }
+
+        setWeightCloud(cloud);
+
+        cloud.subscribeWeightEntries(user.$id, (event, entry) => {
+            const current = getWeightEntries().slice();
+            if (event === 'create') {
+                const i = current.findIndex(e => e.date === entry.date);
+                if (i >= 0) current[i] = entry; else current.push(entry);
+                syncWeightFromCloud(current);
+            } else if (event === 'delete') {
+                syncWeightFromCloud(current.filter(e => e.date !== entry.date));
+            }
+        });
+
+        // Body settings cloud sync (startWeight, goalWeight, height, missionStartDate)
+        try {
+            const cloudSettings = await cloud.fetchBodySettings();
+            if (cloudSettings) {
+                applyBodySettings(cloudSettings);
+            } else {
+                // First device — push local settings to cloud
+                cloud.saveBodySettings(getBodySettings()).catch(() => {});
+            }
+        } catch { /* keep local settings */ }
+
+        setBodySettingsCloud(cloud);
+
+        cloud.subscribeBodySettings(user.$id, settings => {
+            applyBodySettings(settings);
+        });
 
         // Workout state cloud sync
         try {

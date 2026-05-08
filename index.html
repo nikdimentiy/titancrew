@@ -12,7 +12,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <script src="js/chart.umd.min.js"></script>
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/layout.css">
@@ -771,30 +771,55 @@
 
             <!-- Goal Prediction -->
             <div class="section" id="b-prediction-section">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;">
-                    <div style="font-family:var(--ff-h);font-size:1rem;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.08em;">Goal Prediction</div>
-                    <div id="b-pred-badge" class="pred-badge pred-badge--gold">CALCULATING</div>
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+                    <div>
+                        <div style="font-family:var(--ff-h);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.14em;color:var(--muted);margin-bottom:0.3rem;">Smart Analysis</div>
+                        <div style="font-family:var(--ff-h);font-size:1.4rem;font-weight:700;color:var(--text);">Goal Prediction</div>
+                    </div>
+                    <div style="display:flex;gap:0.8rem;align-items:center;flex-wrap:wrap;">
+                        <div id="b-pred-badge" class="pred-badge pred-badge--gold" style="font-size:0.65rem;">CALCULATING</div>
+                        <div style="font-size:0.65rem;color:var(--muted);background:rgba(167,139,250,0.08);padding:0.4rem 0.8rem;border-radius:4px;border:1px solid rgba(167,139,250,0.15);display:flex;align-items:center;gap:0.4rem;">
+                            <span>⚠</span> <span style="font-family:var(--ff-h);letter-spacing:0.08em;">LOCAL DATA</span>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="pred-card">
-                    <div class="pred-card-main">
-                        <div class="pred-eta-label">Estimated Achievement Date</div>
-                        <div class="pred-eta-date" id="b-pred-date">—</div>
+                    <!-- Main ETA Box -->
+                    <div class="pred-card-hero">
+                        <div class="pred-hero-label">When will you hit your goal?</div>
+                        <div class="pred-hero-date" id="b-pred-date">—</div>
+                        <div class="pred-hero-subtext">Based on <span id="b-pred-entry-count">0</span> logged entries</div>
                     </div>
-                    <div class="pred-stats-row">
-                        <div class="pred-stat">
-                            <div class="pred-stat-val" id="b-pred-rate">—</div>
-                            <div class="pred-stat-label" id="b-pred-rate-lbl">LBS / WEEK</div>
+
+                    <!-- Key Metrics Grid -->
+                    <div class="pred-metrics-grid">
+                        <div class="pred-metric">
+                            <div class="pred-metric-label">Weekly Progress</div>
+                            <div class="pred-metric-val" id="b-pred-rate">—</div>
+                            <div class="pred-metric-unit" id="b-pred-rate-lbl">LBS/WEEK</div>
+                            <div class="pred-metric-sub" id="b-pred-rate-direction">Steady pace</div>
                         </div>
-                        <div class="pred-stat pred-stat--center">
-                            <div class="pred-stat-val gold" id="b-pred-days">—</div>
-                            <div class="pred-stat-label">DAYS LEFT</div>
+                        <div class="pred-metric">
+                            <div class="pred-metric-label">Time Remaining</div>
+                            <div class="pred-metric-val gold" id="b-pred-days">—</div>
+                            <div class="pred-metric-unit">DAYS</div>
+                            <div class="pred-metric-sub">From today</div>
                         </div>
-                        <div class="pred-stat pred-stat--right">
-                            <div class="pred-stat-val" id="b-pred-conf">—</div>
-                            <div class="pred-stat-label">CONFIDENCE</div>
+                        <div class="pred-metric">
+                            <div class="pred-metric-label">Data Quality</div>
+                            <div class="pred-metric-val" id="b-pred-conf">—</div>
+                            <div class="pred-metric-unit">CONFIDENCE</div>
+                            <div class="pred-metric-sub" id="b-pred-conf-text">How consistent</div>
                         </div>
                     </div>
-                    <div class="pred-timeline-wrap" id="b-pred-timeline"></div>
+
+                    <!-- Journey Timeline -->
+                    <div class="pred-journey-section">
+                        <div style="font-family:var(--ff-h);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:1.2rem;">Your Weight Journey</div>
+                        <div class="pred-timeline-wrap" id="b-pred-timeline"></div>
+                    </div>
+
                 </div>
             </div>
 
@@ -821,27 +846,13 @@
                         <div class="vital-block-sub">lbs dropped</div>
                     </div>
                     <div class="vital-block">
-                        <div class="vital-block-label">Log Entries</div>
-                        <div class="vital-block-val" id="b-logs-count">0</div>
-                        <div class="vital-block-sub">total data</div>
+                        <div class="vital-block-label">BMI Index</div>
+                        <div class="vital-block-val" id="b-vitals-bmi">--</div>
+                        <div id="b-vitals-bmi-badge" style="display:inline-block;margin-top:6px;padding:4px 10px;border-radius:99px;font-size:0.62rem;font-weight:800;letter-spacing:0.12em;background:var(--bg-card);color:var(--muted);">—</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Chart -->
-            <div class="section">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.7rem;">
-                    <div style="font-family:var(--ff-h);font-size:1rem;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.08em;">Mass Trajectory</div>
-                    <div class="range-tabs">
-                        <button class="range-tab b-range-tab" data-range="7">7D</button>
-                        <button class="range-tab b-range-tab" data-range="30">30D</button>
-                        <button class="range-tab b-range-tab active" data-range="all">ALL</button>
-                    </div>
-                </div>
-                <div class="body-chart-wrap" style="font-family:'Roboto',sans-serif;color:#fbbf24;">
-                    <canvas id="b-main-chart"></canvas>
-                </div>
-            </div>
 
             <!-- Calendar -->
             <div class="section">

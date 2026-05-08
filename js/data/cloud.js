@@ -1,6 +1,6 @@
 import {
     client, account, databases,
-    DATABASE_ID, WORKOUTS_COL, CARDIO_COL, PLANS_COL, WORKOUT_STATE_COL, MEASUREMENTS_COL,
+    DATABASE_ID, WORKOUTS_COL, CARDIO_COL, PLANS_COL, WORKOUT_STATE_COL, MEASUREMENTS_COL, WEIGHT_COL, BODY_SETTINGS_COL,
     ID, Query, Permission, Role,
 } from './appwrite.js';
 
@@ -444,6 +444,153 @@ export async function wipeAllMeasurements() {
     }
 }
 
+export function subscribeMeasurements(userId, onEvent) {
+    return client.subscribe(
+        `databases.${DATABASE_ID}.collections.${MEASUREMENTS_COL}.documents`,
+        response => {
+            const doc    = response.payload;
+            const events = response.events;
+            if (doc.userId !== userId) return;
+
+            if (events.some(e => e.includes('.create'))) {
+                onEvent('create', measDocToEntry(doc));
+            } else if (events.some(e => e.includes('.delete'))) {
+                onEvent('delete', measDocToEntry(doc));
+            }
+        }
+    );
+}
+
+// ── Weight Entries ─────────────────────────────────────────────────────────────
+
+export async function fetchWeightEntries() {
+    const userId  = await getUserId();
+    const results = [];
+    let   cursor  = null;
+
+    for (;;) {
+        const queries = [
+            Query.equal('userId', userId),
+            Query.orderDesc('date'),
+            Query.limit(100),
+        ];
+        if (cursor) queries.push(Query.cursorAfter(cursor));
+
+        const res = await databases.listDocuments(DATABASE_ID, WEIGHT_COL, queries);
+        results.push(...res.documents.map(weightDocToEntry));
+        if (res.documents.length < 100) break;
+        cursor = res.documents[res.documents.length - 1].$id;
+    }
+
+    return results;
+}
+
+export async function addWeightEntry(entry) {
+    const userId = await getUserId();
+    await databases.createDocument(
+        DATABASE_ID,
+        WEIGHT_COL,
+        ID.unique(),
+        {
+            userId,
+            localId:   entry.date,
+            date:      entry.date,
+            weight:    Number(entry.weight),
+            isFasting: Boolean(entry.isFasting),
+            note:      entry.note ?? '',
+        },
+        [
+            Permission.read(Role.user(userId)),
+            Permission.update(Role.user(userId)),
+            Permission.delete(Role.user(userId)),
+        ]
+    );
+}
+
+export async function upsertWeightEntry(entry) {
+    const userId = await getUserId();
+    const res = await databases.listDocuments(DATABASE_ID, WEIGHT_COL, [
+        Query.equal('userId',  userId),
+        Query.equal('localId', entry.date),
+        Query.limit(1),
+    ]);
+    const data = {
+        weight:    Number(entry.weight),
+        isFasting: Boolean(entry.isFasting),
+        note:      entry.note ?? '',
+    };
+    if (res.documents.length > 0) {
+        await databases.updateDocument(DATABASE_ID, WEIGHT_COL, res.documents[0].$id, data);
+    } else {
+        await databases.createDocument(
+            DATABASE_ID,
+            WEIGHT_COL,
+            ID.unique(),
+            { userId, localId: entry.date, date: entry.date, ...data },
+            [
+                Permission.read(Role.user(userId)),
+                Permission.update(Role.user(userId)),
+                Permission.delete(Role.user(userId)),
+            ]
+        );
+    }
+}
+
+export async function removeWeightEntry(date) {
+    const userId = await getUserId();
+    const res = await databases.listDocuments(DATABASE_ID, WEIGHT_COL, [
+        Query.equal('userId',  userId),
+        Query.equal('localId', date),
+        Query.limit(1),
+    ]);
+    if (res.documents.length > 0) {
+        await databases.deleteDocument(DATABASE_ID, WEIGHT_COL, res.documents[0].$id);
+    }
+}
+
+export async function wipeAllWeightEntries() {
+    const userId = await getUserId();
+    for (;;) {
+        const res = await databases.listDocuments(DATABASE_ID, WEIGHT_COL, [
+            Query.equal('userId', userId),
+            Query.limit(100),
+        ]);
+        if (res.documents.length === 0) break;
+        await Promise.all(
+            res.documents.map(d =>
+                databases.deleteDocument(DATABASE_ID, WEIGHT_COL, d.$id)
+            )
+        );
+        if (res.documents.length < 100) break;
+    }
+}
+
+export function subscribeWeightEntries(userId, onEvent) {
+    return client.subscribe(
+        `databases.${DATABASE_ID}.collections.${WEIGHT_COL}.documents`,
+        response => {
+            const doc    = response.payload;
+            const events = response.events;
+            if (doc.userId !== userId) return;
+
+            if (events.some(e => e.includes('.create')) || events.some(e => e.includes('.update'))) {
+                onEvent('create', weightDocToEntry(doc));
+            } else if (events.some(e => e.includes('.delete'))) {
+                onEvent('delete', weightDocToEntry(doc));
+            }
+        }
+    );
+}
+
+function weightDocToEntry(doc) {
+    return {
+        date:      doc.date,
+        weight:    Number(doc.weight),
+        isFasting: Boolean(doc.isFasting),
+        note:      doc.note ?? '',
+    };
+}
+
 function measDocToEntry(doc) {
     return {
         id:      Number(doc.localId) || doc.$id,
@@ -471,4 +618,52 @@ function docToEntry(doc) {
         rpe:          doc.rpe,
         notes:        doc.notes,
     };
+}
+
+// ── Body Settings ─────────────────────────────────────────────────────────────
+
+export async function fetchBodySettings() {
+    const userId = await getUserId();
+    const res = await databases.listDocuments(DATABASE_ID, BODY_SETTINGS_COL, [
+        Query.equal('userId', userId),
+        Query.limit(1),
+    ]);
+    if (res.documents.length === 0) return null;
+    try { return JSON.parse(res.documents[0].data); } catch { return null; }
+}
+
+export async function saveBodySettings(settings) {
+    const userId = await getUserId();
+    const res = await databases.listDocuments(DATABASE_ID, BODY_SETTINGS_COL, [
+        Query.equal('userId', userId),
+        Query.limit(1),
+    ]);
+    const dataStr = JSON.stringify(settings);
+    if (res.documents.length > 0) {
+        await databases.updateDocument(DATABASE_ID, BODY_SETTINGS_COL, res.documents[0].$id, { data: dataStr });
+    } else {
+        await databases.createDocument(
+            DATABASE_ID, BODY_SETTINGS_COL, ID.unique(),
+            { userId, data: dataStr },
+            [
+                Permission.read(Role.user(userId)),
+                Permission.update(Role.user(userId)),
+                Permission.delete(Role.user(userId)),
+            ]
+        );
+    }
+}
+
+export function subscribeBodySettings(userId, onUpdate) {
+    return client.subscribe(
+        `databases.${DATABASE_ID}.collections.${BODY_SETTINGS_COL}.documents`,
+        response => {
+            const doc    = response.payload;
+            const events = response.events;
+            if (doc.userId !== userId) return;
+            if (events.some(e => e.includes('.create')) || events.some(e => e.includes('.update'))) {
+                try { onUpdate(JSON.parse(doc.data)); } catch {}
+            }
+        }
+    );
 }
