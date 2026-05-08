@@ -404,8 +404,146 @@ function renderBodyCalendar() {
             if (entry.isFasting) cell.classList.add('is-fasting');
             cell.title = `${toDisp(entry.weight).toFixed(1)} ${getUnit()}${entry.isFasting ? ' — Titan Fast' : ''}`;
         }
+        cell.addEventListener('click', () => openDayStats(checkDate));
         grid.appendChild(cell);
     }
+}
+
+// ── Day Stats Modal ───────────────────────────────────────────────────────────
+function openDayStats(dateStr) {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const unit = getUnit();
+
+    const entry     = appData.entries.find(e => e.date === dateStr);
+    const prevDate  = getLocalISO(new Date(y, m - 1, d - 1));
+    const prevEntry = appData.entries.find(e => e.date === prevDate);
+
+    let workoutEntries = [];
+    try { workoutEntries = (JSON.parse(localStorage.getItem('titanCrewData') || '[]')).filter(e => e.date === dateStr); } catch {}
+
+    let cardioEntries = [];
+    try { cardioEntries = (JSON.parse(localStorage.getItem('titan_cardio') || '[]')).filter(e => e.date === dateStr); } catch {}
+
+    const DOW   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const MONFL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const dayOfWeek = DOW[new Date(y, m - 1, d).getDay()].toUpperCase();
+    const monthName = MONFL[m - 1].toUpperCase();
+
+    let missionDay = '--';
+    if (appData.missionStartDate) {
+        const n = Math.floor((new Date(dateStr + 'T00:00:00') - new Date(appData.missionStartDate + 'T00:00:00')) / 86400000) + 1;
+        if (n >= 1) missionDay = n;
+    }
+
+    // Weight section
+    let weightHtml;
+    if (entry) {
+        const w = toDisp(entry.weight).toFixed(1);
+        let diffHtml = '';
+        if (prevEntry) {
+            const diff = toDisp(entry.weight - prevEntry.weight);
+            const abs  = Math.abs(diff).toFixed(1);
+            if      (diff < 0) diffHtml = `<div class="dstat-diff dstat-loss">▼ ${abs} ${unit} vs prev day</div>`;
+            else if (diff > 0) diffHtml = `<div class="dstat-diff dstat-gain">▲ ${abs} ${unit} vs prev day</div>`;
+            else               diffHtml = `<div class="dstat-diff dstat-neu">— unchanged vs prev day</div>`;
+        }
+
+        const h   = appData.height || 70;
+        const bmi = unit === 'kg'
+            ? (entry.weight / 2.20462) / Math.pow(h * 0.0254, 2)
+            : (entry.weight / (h * h)) * 703;
+        let bmiStatus = 'NORMAL', bmiColor = 'var(--mint)';
+        if      (bmi < 18.5)            { bmiStatus = 'UNDER'; bmiColor = 'var(--sky)'; }
+        else if (bmi >= 25 && bmi < 30) { bmiStatus = 'OVER';  bmiColor = '#d4af37';    }
+        else if (bmi >= 30)             { bmiStatus = 'OBESE'; bmiColor = 'var(--danger)'; }
+
+        weightHtml = `
+            <div class="dstat-section">
+                <div class="dstat-sec-label">WEIGHT</div>
+                <div class="dstat-weight-big">${w} <span class="dstat-unit">${unit}</span></div>
+                ${diffHtml}
+                <div class="dstat-bmi-row">
+                    <span class="dstat-bmi-val">BMI ${bmi.toFixed(1)}</span>
+                    <span class="dstat-badge" style="color:${bmiColor};border-color:${bmiColor}">${bmiStatus}</span>
+                </div>
+                ${entry.note ? `<div class="dstat-note">"${entry.note}"</div>` : ''}
+            </div>`;
+    } else {
+        weightHtml = `
+            <div class="dstat-section">
+                <div class="dstat-sec-label">WEIGHT</div>
+                <div class="dstat-empty">No weight logged</div>
+            </div>`;
+    }
+
+    // Strength section
+    let strengthHtml;
+    if (workoutEntries.length > 0) {
+        const byEx = {};
+        workoutEntries.forEach(e => { (byEx[e.exercise] = byEx[e.exercise] || []).push(e); });
+        const totalVol = workoutEntries.reduce((s, e) => s + (e.volume || 0), 0);
+        const rows = Object.entries(byEx).map(([ex, sets]) => {
+            const maxW  = Math.max(...sets.map(e => e.weight));
+            const isBW  = sets[0].isBodyweight ?? (maxW === 0);
+            const wStr  = isBW ? 'BW' : `${unit === 'kg' ? (maxW / 2.20462).toFixed(1) : maxW} ${unit}`;
+            const avgR  = Math.round(sets.reduce((s, e) => s + e.reps, 0) / sets.length);
+            const vol   = sets.reduce((s, e) => s + (e.volume || 0), 0);
+            return `<div class="dstat-ex-row">
+                <span class="dstat-ex-name">${ex}</span>
+                <span class="dstat-ex-detail">${sets.length}×${avgR} · ${wStr}</span>
+                ${vol > 0 ? `<span class="dstat-ex-vol">${vol.toLocaleString()} lbs</span>` : '<span></span>'}
+            </div>`;
+        }).join('');
+        strengthHtml = `
+            <div class="dstat-section">
+                <div class="dstat-sec-label">STRENGTH · ${Object.keys(byEx).length} exercise${Object.keys(byEx).length !== 1 ? 's' : ''}</div>
+                <div class="dstat-ex-list">${rows}</div>
+                ${totalVol > 0 ? `<div class="dstat-total-vol">Total Volume: <strong>${totalVol.toLocaleString()} lbs</strong></div>` : ''}
+            </div>`;
+    } else {
+        strengthHtml = `
+            <div class="dstat-section">
+                <div class="dstat-sec-label">STRENGTH</div>
+                <div class="dstat-empty">No strength training logged</div>
+            </div>`;
+    }
+
+    // Cardio section
+    let cardioHtml;
+    if (cardioEntries.length > 0) {
+        const totalMin = cardioEntries.reduce((s, e) => s + Number(e.duration || 0), 0);
+        const totalCal = cardioEntries.reduce((s, e) => s + Number(e.calories  || 0), 0);
+        const CI = { Treadmill: '🏃', Elliptical: '🔄', Swimming: '🏊', Walking: '🚶' };
+        const rows = cardioEntries.map(e => `<div class="dstat-ex-row">
+            <span class="dstat-ex-name">${CI[e.activity] || '🏃'} ${e.activity}</span>
+            <span class="dstat-ex-detail">${e.duration} min${e.distance ? ` · ${e.distance} mi` : ''}</span>
+            ${e.calories ? `<span class="dstat-ex-vol">${e.calories} cal</span>` : '<span></span>'}
+        </div>`).join('');
+        cardioHtml = `
+            <div class="dstat-section">
+                <div class="dstat-sec-label">CARDIO · ${cardioEntries.length} session${cardioEntries.length !== 1 ? 's' : ''}</div>
+                <div class="dstat-ex-list">${rows}</div>
+                <div class="dstat-total-vol">${totalMin} min total${totalCal ? ` · ${totalCal} cal burned` : ''}</div>
+            </div>`;
+    } else {
+        cardioHtml = `
+            <div class="dstat-section">
+                <div class="dstat-sec-label">CARDIO</div>
+                <div class="dstat-empty">No cardio logged</div>
+            </div>`;
+    }
+
+    el('b-dstat-content').innerHTML = `
+        <div class="dstat-header">
+            <div class="dstat-date">${dayOfWeek}, ${monthName} ${d} · ${y}</div>
+            <div class="dstat-mission">MISSION DAY ${missionDay}</div>
+            ${entry?.isFasting ? '<div class="dstat-fast-badge">⚡ TITAN FAST</div>' : ''}
+        </div>
+        ${weightHtml}
+        ${strengthHtml}
+        ${cardioHtml}`;
+
+    openBodyModal('b-day-stats-modal');
 }
 
 // ── Measurements ─────────────────────────────────────────────────────────────
@@ -673,6 +811,10 @@ export function initBody() {
             }).catch(() => {});
         }
     });
+
+    // Day stats modal close
+    el('b-dstat-close').addEventListener('click', () => closeBodyModal('b-day-stats-modal'));
+    el('b-day-stats-modal').querySelector('[data-backdrop-dstat]').addEventListener('click', () => closeBodyModal('b-day-stats-modal'));
 
     // Calendar nav
     el('b-cal-prev').addEventListener('click', () => {
