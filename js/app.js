@@ -2,13 +2,15 @@ import { storage }                               from './data/storage.js';
 import { setTodayInput, updateTimeWidgets, updatePstClock, updateSessionDuration, setSessionUser, setSyncStatus, updateWeeklySummary } from './modules/widgets.js';
 import { setupForm, setWorkoutGetter, updateExerciseAutocomplete } from './modules/form.js';
 import { updateWorkoutLog, updateFilterOptions } from './modules/history.js';
-import { updateMetrics, updatePersonalRecords }  from './modules/metrics.js';
+import { updateMetrics, updatePersonalRecords, initWidgetModal } from './modules/metrics.js';
 import { showToast }                             from './modules/ui.js';
 import { savePlan, renderPlanPanel, setPlansCloud, getAllPlans, syncPlansFromCloud } from './modules/plan.js';
 import { initAuth, signOut, signOutHard } from './modules/auth.js';
 import { initCardio, openCardioPanel, setCardioCloud, getCardioWorkouts, syncCardioFromCloud } from './modules/cardio.js';
 import { initBody, refreshBody, setMeasCloud, setWeightCloud, setBodySettingsCloud, getMeasData, getWeightEntries, getBodySettings, syncMeasFromCloud, syncWeightFromCloud, applyBodySettings } from './modules/body.js';
 import { initWorkout, activatePlan, setWorkoutCloud, getWorkoutState, applyWorkoutState, refreshWorkout } from './modules/workout.js';
+import { initPushUp, setPushUpCloud, syncPushUpFromCloud } from './modules/pushup.js';
+import { initPullUp, setPullUpCloud, syncPullUpFromCloud } from './modules/pullup.js';
 
 // ── State ─────────────────────────────────────────────────────────────────────
 let workoutData  = [];
@@ -141,6 +143,7 @@ async function wipeData() {
 // ── UI setup ──────────────────────────────────────────────────────────────────
 setupForm(logEntry);
 setWorkoutGetter(() => workoutData);
+initWidgetModal(() => workoutData);
 setTodayInput();
 updateTimeWidgets();
 updatePstClock();
@@ -356,6 +359,22 @@ initAuth(async user => {
             applyBodySettings(settings);
         });
 
+        // Push-Up history cloud sync
+        try {
+            const cloudPuHistory = await cloud.fetchPushUpHistory();
+            if (cloudPuHistory) syncPushUpFromCloud(cloudPuHistory);
+        } catch { /* keep local pushup history */ }
+
+        setPushUpCloud(cloud);
+
+        // Pull-Up history cloud sync
+        try {
+            const cloudPlHistory = await cloud.fetchPullUpHistory();
+            if (cloudPlHistory) syncPullUpFromCloud(cloudPlHistory);
+        } catch { /* keep local pullup history */ }
+
+        setPullUpCloud(cloud);
+
         // Workout state cloud sync
         try {
             const cloudState = await cloud.fetchWorkoutState();
@@ -501,6 +520,8 @@ initCardio();
 document.getElementById('c-open-panel-cardio').addEventListener('click', openCardioPanel);
 initBody();
 initWorkout(logEntry);
+initPushUp(logEntry, deleteEntry);
+initPullUp(logEntry, deleteEntry);
 
 // ── Service worker ────────────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
