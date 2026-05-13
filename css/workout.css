@@ -1005,6 +1005,7 @@
     .wkmod-grid-row    .wkmod-grid-num { display: none; }
     .wkmod-row { grid-template-columns: 1fr; }
 }
+<<<<<<< HEAD
 
 /* ── Widget Detail Modal ─────────────────────────────────────────────────────── */
 
@@ -1197,3 +1198,5 @@
     padding: 1.2rem 0;
     font-style: italic;
 }
+=======
+>>>>>>> d5b0fcf9da29e19a9b868ee47d4e9ee3ee5165e7
