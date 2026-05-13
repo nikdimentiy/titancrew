@@ -1305,6 +1305,132 @@
                 </div>
             </div>
 
+            <!-- Bodyweight Modules: Push-Up & Pull-Up -->
+            <div class="wkmod-group">
+
+                <!-- Push-Up Module -->
+                <div class="wkmod wkmod--pushup" id="wkmod-pushup">
+                    <div class="wkmod-head" id="pu-toggle">
+                        <div class="wkmod-head-left">
+                            <div class="wkmod-icon">
+                                <!-- Push-up: front-view press stance -->
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="3" r="2"/>
+                                    <path d="M12 5 L12 10"/>
+                                    <path d="M12 8 L6 11 L5 17"/>
+                                    <path d="M12 8 L18 11 L19 17"/>
+                                    <line x1="2" y1="17" x2="22" y2="17"/>
+                                    <path d="M12 10 L10 18 M12 10 L14 18"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="wkmod-title">Push-Ups</div>
+                                <div class="wkmod-sub">Bodyweight · 5×5 rep grid</div>
+                            </div>
+                        </div>
+                        <span class="wkmod-toggle-icon" id="pu-toggle-icon">▸</span>
+                    </div>
+                    <div class="wkmod-body wkmod-collapsed" id="pu-body">
+                        <div class="wkmod-stats">
+                            <div class="wkmod-stat"><span class="wkmod-stat-val" id="pu-stat-total">0</span><span class="wkmod-stat-lbl">Reps</span></div>
+                            <div class="wkmod-stat"><span class="wkmod-stat-val" id="pu-stat-sets">0</span><span class="wkmod-stat-lbl">Sets</span></div>
+                            <div class="wkmod-stat"><span class="wkmod-stat-val" id="pu-stat-avg">0</span><span class="wkmod-stat-lbl">Avg</span></div>
+                            <div class="wkmod-stat"><span class="wkmod-stat-val" id="pu-stat-max">0</span><span class="wkmod-stat-lbl">Max</span></div>
+                            <div class="wkmod-stat"><span class="wkmod-stat-val" id="pu-stat-dropoff">—</span><span class="wkmod-stat-lbl">Drop-off</span></div>
+                        </div>
+                        <div id="pu-grid" class="wkmod-grid"></div>
+                        <div class="wkmod-controls">
+                            <button id="pu-log-btn" class="wkmod-btn wkmod-btn--primary">✓ Log Workout</button>
+                            <button id="pu-clear-btn" class="wkmod-btn wkmod-btn--ghost">Clear</button>
+                            <button id="pu-edit-cancel-btn" class="wkmod-btn wkmod-btn--cancel">✕ Cancel Edit</button>
+                        </div>
+                        <div class="wkmod-hist-label">Recent Sessions</div>
+                        <div id="pu-history" class="wkmod-hist"></div>
+                    </div>
+                </div>
+
+                <!-- Pull-Up Module -->
+                <div class="wkmod wkmod--pullup" id="wkmod-pullup">
+                    <div class="wkmod-head" id="pl-toggle">
+                        <div class="wkmod-head-left">
+                            <div class="wkmod-icon">
+                                <!-- Pull-up: bar with end brackets, arms hanging, body below -->
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="3" y1="4" x2="21" y2="4"/>
+                                    <line x1="3" y1="2" x2="3" y2="6"/>
+                                    <line x1="21" y1="2" x2="21" y2="6"/>
+                                    <line x1="8" y1="4" x2="8" y2="9"/>
+                                    <line x1="16" y1="4" x2="16" y2="9"/>
+                                    <circle cx="12" cy="12" r="2"/>
+                                    <line x1="12" y1="9" x2="12" y2="14"/>
+                                    <path d="M12 14 L9 20 M12 14 L15 20"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="wkmod-title">Pull-Ups</div>
+                                <div class="wkmod-sub">Track reps, volume &amp; progression</div>
+                            </div>
+                        </div>
+                        <span class="wkmod-toggle-icon" id="pl-toggle-icon">▸</span>
+                    </div>
+                    <div class="wkmod-body wkmod-collapsed" id="pl-body">
+                        <div class="wkmod-path">
+                            <div class="wkmod-path-bar-bg">
+                                <div class="wkmod-path-bar-fill" id="pl-path-fill" style="width:0%"></div>
+                            </div>
+                            <div class="wkmod-path-labels"><span>3 reps</span><span>14 reps</span><span>25 reps</span></div>
+                            <div class="wkmod-path-status">Max: <strong id="pl-max-reps">0</strong> reps · <strong id="pl-path-status">BEGINNER</strong></div>
+                        </div>
+                        <div class="wkmod-row" style="margin-bottom:0.55rem;">
+                            <div class="wkmod-field" style="margin-bottom:0;">
+                                <label class="wkmod-label">Style</label>
+                                <select id="pl-type" class="wkmod-select">
+                                    <option>Standard</option>
+                                    <option>Wide Grip</option>
+                                    <option>Close Grip</option>
+                                    <option>Chin-Up</option>
+                                    <option>Neutral Grip</option>
+                                    <option>Weighted</option>
+                                    <option>Muscle-Up</option>
+                                </select>
+                            </div>
+                            <div class="wkmod-field" style="margin-bottom:0;">
+                                <label class="wkmod-label">Added Weight (lbs)</label>
+                                <input type="number" id="pl-weight" min="0" step="2.5" value="0" class="wkmod-input">
+                            </div>
+                        </div>
+                        <div class="wkmod-sets-header">
+                            <span class="wkmod-sets-label">Sets &amp; Reps</span>
+                            <button id="pl-add-set-btn" class="wkmod-add-set-btn">+ Add Set</button>
+                        </div>
+                        <div id="pl-sets-container" class="wkmod-sets-container">
+                            <div class="wkmod-set-block">
+                                <span class="wkmod-set-label pl-set-label">Set 1</span>
+                                <input type="number" min="1" value="5" class="wkmod-set-input pl-rep-input">
+                                <button type="button" class="wkmod-set-del" title="Remove set">✕</button>
+                            </div>
+                        </div>
+                        <div class="wkmod-row" style="margin-bottom:0.55rem;">
+                            <div class="wkmod-field" style="margin-bottom:0;">
+                                <label class="wkmod-label">Bodyweight (lbs)</label>
+                                <input type="number" id="pl-bodyweight" min="50" value="170" class="wkmod-input">
+                            </div>
+                            <div class="wkmod-field" style="margin-bottom:0;">
+                                <label class="wkmod-label">Notes</label>
+                                <input type="text" id="pl-notes" placeholder="Clean form..." class="wkmod-input">
+                            </div>
+                        </div>
+                        <div class="wkmod-controls">
+                            <button id="pl-log-btn" class="wkmod-btn wkmod-btn--sky">✓ Log Session</button>
+                            <button id="pl-edit-cancel-btn" class="wkmod-btn wkmod-btn--cancel">✕ Cancel Edit</button>
+                        </div>
+                        <div class="wkmod-hist-label">Recent Sessions</div>
+                        <div id="pl-history" class="wkmod-hist"></div>
+                    </div>
+                </div>
+
+            </div><!-- /wkmod-group -->
+
             <!-- Exercises checklist -->
             <div id="wk-content" class="wk-content"></div>
 

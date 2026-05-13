@@ -9,6 +9,8 @@ import { initAuth, signOut, signOutHard } from './modules/auth.js';
 import { initCardio, openCardioPanel, setCardioCloud, getCardioWorkouts, syncCardioFromCloud } from './modules/cardio.js';
 import { initBody, refreshBody, setMeasCloud, setWeightCloud, setBodySettingsCloud, getMeasData, getWeightEntries, getBodySettings, syncMeasFromCloud, syncWeightFromCloud, applyBodySettings } from './modules/body.js';
 import { initWorkout, activatePlan, setWorkoutCloud, getWorkoutState, applyWorkoutState, refreshWorkout } from './modules/workout.js';
+import { initPushUp, setPushUpCloud, syncPushUpFromCloud } from './modules/pushup.js';
+import { initPullUp, setPullUpCloud, syncPullUpFromCloud } from './modules/pullup.js';
 
 // ── State ─────────────────────────────────────────────────────────────────────
 let workoutData  = [];
@@ -356,6 +358,22 @@ initAuth(async user => {
             applyBodySettings(settings);
         });
 
+        // Push-Up history cloud sync
+        try {
+            const cloudPuHistory = await cloud.fetchPushUpHistory();
+            if (cloudPuHistory) syncPushUpFromCloud(cloudPuHistory);
+        } catch { /* keep local pushup history */ }
+
+        setPushUpCloud(cloud);
+
+        // Pull-Up history cloud sync
+        try {
+            const cloudPlHistory = await cloud.fetchPullUpHistory();
+            if (cloudPlHistory) syncPullUpFromCloud(cloudPlHistory);
+        } catch { /* keep local pullup history */ }
+
+        setPullUpCloud(cloud);
+
         // Workout state cloud sync
         try {
             const cloudState = await cloud.fetchWorkoutState();
@@ -501,6 +519,8 @@ initCardio();
 document.getElementById('c-open-panel-cardio').addEventListener('click', openCardioPanel);
 initBody();
 initWorkout(logEntry);
+initPushUp(logEntry, deleteEntry);
+initPullUp(logEntry, deleteEntry);
 
 // ── Service worker ────────────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {

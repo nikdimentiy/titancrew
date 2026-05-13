@@ -518,3 +518,490 @@
     .wk-input { width: 44px; }
     .ex-panel { width: 100vw; }
 }
+
+/* ══════════════════════════════════════════════
+   WORKOUT MODULES  (Push-Up · Pull-Up)
+══════════════════════════════════════════════ */
+
+.wkmod-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.wkmod {
+    background: var(--bg-card);
+    border: 1px solid var(--bdr);
+    border-radius: var(--r3);
+    overflow: hidden;
+}
+
+/* ── Header ────────────────────────────── */
+.wkmod-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1.2rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+}
+.wkmod-head:hover { background: rgba(167, 139, 250, 0.04); }
+
+.wkmod-head-left {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.wkmod-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+.wkmod--pushup .wkmod-icon {
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.28);
+    color: #f59e0b;
+}
+.wkmod--pullup .wkmod-icon {
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.28);
+    color: var(--sky);
+}
+
+.wkmod-title {
+    font-family: var(--ff-h);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text);
+}
+.wkmod-sub {
+    font-size: 0.67rem;
+    color: var(--muted);
+    letter-spacing: 0.03em;
+    margin-top: 1px;
+}
+
+.wkmod-toggle-icon {
+    font-size: 0.7rem;
+    color: var(--muted);
+}
+
+/* ── Body ──────────────────────────────── */
+.wkmod-body {
+    padding: 0.75rem 1.2rem 1rem;
+    border-top: 1px solid var(--bdr);
+}
+.wkmod-body.wkmod-collapsed { display: none; }
+
+/* ── Live Stats Bar ────────────────────── */
+.wkmod-stats {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+.wkmod-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    background: var(--bg-input);
+    border: 1px solid var(--bdr);
+    border-radius: var(--r1);
+    padding: 0.38rem 0.6rem;
+    flex: 1;
+    min-width: 46px;
+}
+.wkmod-stat-val {
+    font-family: var(--ff-h);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+}
+.wkmod-stat-lbl {
+    font-family: var(--ff-h);
+    font-size: 0.57rem;
+    color: var(--muted);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+/* ── 5×5 Rep Grid ──────────────────────── */
+.wkmod-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 0.15rem;
+}
+.wkmod-grid-header,
+.wkmod-grid-row {
+    display: grid;
+    grid-template-columns: 22px repeat(5, 1fr) 40px;
+    gap: 4px;
+    align-items: center;
+}
+.wkmod-grid-num {
+    font-family: var(--ff-h);
+    font-size: 0.56rem;
+    color: var(--muted);
+    text-align: center;
+}
+.wkmod-grid-col-label {
+    font-family: var(--ff-h);
+    font-size: 0.56rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    text-align: center;
+}
+.wkmod-grid-input {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--bdr);
+    border-radius: var(--r1);
+    padding: 7px 2px;
+    text-align: center;
+    color: var(--text);
+    font-family: var(--ff-h);
+    font-size: 0.9rem;
+    font-weight: 700;
+    transition: border-color 0.15s, background 0.15s;
+    -moz-appearance: textfield;
+}
+.wkmod-grid-input::-webkit-outer-spin-button,
+.wkmod-grid-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.wkmod-grid-input::placeholder { color: var(--dimmed); }
+.wkmod-grid-input:focus {
+    outline: none;
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.07);
+}
+.wkmod-grid-sum {
+    text-align: center;
+    font-family: var(--ff-h);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--muted);
+    border: 1px dashed var(--bdr);
+    border-radius: var(--r1);
+    padding: 7px 2px;
+    transition: all 0.18s;
+}
+.wkmod-grid-sum.has-value {
+    border-style: solid;
+    border-color: #f59e0b;
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.07);
+}
+
+/* ── Buttons ───────────────────────────── */
+.wkmod-controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.7rem;
+    flex-wrap: wrap;
+}
+.wkmod-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.48rem 1rem;
+    border-radius: var(--r2);
+    font-family: var(--ff-h);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+}
+.wkmod-btn:active { transform: scale(0.96); }
+.wkmod-btn--primary {
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    color: #0d0b1a;
+}
+.wkmod-btn--primary:hover { opacity: 0.88; }
+.wkmod-btn--sky {
+    background: linear-gradient(135deg, var(--sky), #a78bfa);
+    color: #0d0b1a;
+}
+.wkmod-btn--sky:hover { opacity: 0.88; }
+.wkmod-btn--ghost {
+    background: transparent;
+    border: 1px solid var(--bdr);
+    color: var(--muted);
+}
+.wkmod-btn--ghost:hover { border-color: var(--muted); color: var(--text); }
+
+/* ── History ───────────────────────────── */
+.wkmod-hist-label {
+    font-family: var(--ff-h);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin: 0.85rem 0 0.4rem;
+}
+.wkmod-hist-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--bdr);
+    font-size: 0.76rem;
+}
+.wkmod-hist-row:last-child { border-bottom: none; }
+.wkmod-hist-date {
+    font-family: var(--ff-h);
+    font-size: 0.68rem;
+    color: var(--muted);
+    flex-shrink: 0;
+}
+.wkmod-hist-sets {
+    color: var(--text);
+    font-size: 0.73rem;
+    flex: 1;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 0.3rem;
+}
+.wkmod-hist-total {
+    font-family: var(--ff-h);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #f59e0b;
+    flex-shrink: 0;
+}
+.pl-hist-vol { color: var(--sky); }
+
+.wkmod-empty {
+    font-size: 0.74rem;
+    color: var(--muted);
+    padding: 0.5rem 0;
+    text-align: center;
+}
+
+/* Cancel edit button */
+.wkmod-btn--cancel {
+    background: transparent;
+    border: 1px solid rgba(239,68,68,0.4);
+    color: var(--coral, #ef4444);
+}
+.wkmod-btn--cancel:hover { border-color: var(--coral, #ef4444); opacity: 0.85; }
+
+/* History row action buttons */
+.wkmod-hist-actions {
+    display: flex;
+    gap: 0.22rem;
+    flex-shrink: 0;
+    margin-left: 0.3rem;
+}
+.wkmod-hist-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--r4);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    transition: background 0.15s, color 0.15s, opacity 0.15s;
+    background: transparent;
+    opacity: 0;
+}
+.wkmod-hist-row:hover .wkmod-hist-btn { opacity: 1; }
+.wkmod-hist-btn--edit {
+    color: var(--sky, #38bdf8);
+    background: rgba(56,189,248,0.1);
+}
+.wkmod-hist-btn--edit:hover { background: rgba(56,189,248,0.22); }
+.wkmod-hist-btn--del {
+    color: var(--coral, #ef4444);
+    background: rgba(239,68,68,0.1);
+}
+.wkmod-hist-btn--del:hover { background: rgba(239,68,68,0.22); }
+
+/* Highlight the row currently being edited */
+.wkmod-hist-row--editing {
+    background: rgba(56,189,248,0.07);
+    border-radius: var(--r2);
+    padding-left: 0.4rem;
+    padding-right: 0.2rem;
+}
+.wkmod-hist-row--editing .wkmod-hist-btn { opacity: 1; }
+
+/* ── Pull-Up: Progression Path ─────────── */
+.wkmod-path { margin: 0 0 0.85rem; }
+.wkmod-path-bar-bg {
+    height: 7px;
+    background: rgba(56, 189, 248, 0.08);
+    border-radius: 99px;
+    overflow: hidden;
+    border: 1px solid rgba(56, 189, 248, 0.15);
+}
+.wkmod-path-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #22c55e, #38bdf8, #a78bfa);
+    border-radius: 99px;
+    transition: width 0.6s var(--spring);
+}
+.wkmod-path-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--ff-h);
+    font-size: 0.58rem;
+    color: var(--muted);
+    margin-top: 0.22rem;
+    padding: 0 2px;
+}
+.wkmod-path-status {
+    font-family: var(--ff-h);
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 0.38rem;
+}
+.wkmod-path-status strong { color: var(--sky); }
+
+/* ── Pull-Up: Form Fields ──────────────── */
+.wkmod-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.55rem;
+    margin-bottom: 0.55rem;
+}
+.wkmod-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.28rem;
+    margin-bottom: 0.55rem;
+}
+.wkmod-field:last-child { margin-bottom: 0; }
+.wkmod-label {
+    font-family: var(--ff-h);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+}
+.wkmod-input,
+.wkmod-select {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--bdr);
+    border-radius: var(--r1);
+    padding: 0.5rem 0.65rem;
+    font-size: 0.84rem;
+    color: var(--text);
+    font-family: inherit;
+    transition: border-color 0.15s;
+    -moz-appearance: textfield;
+}
+.wkmod-input::-webkit-outer-spin-button,
+.wkmod-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.wkmod-input:focus,
+.wkmod-select:focus { outline: none; border-color: var(--bdr-focus); }
+.wkmod-select option { background: var(--bg-card); }
+
+/* ── Pull-Up: Dynamic Sets ─────────────── */
+.wkmod-sets-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.4rem;
+}
+.wkmod-sets-label {
+    font-family: var(--ff-h);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+}
+.wkmod-add-set-btn {
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    color: var(--sky);
+    font-family: var(--ff-h);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 0.22rem 0.65rem;
+    border-radius: var(--r4);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.wkmod-add-set-btn:hover { background: rgba(56, 189, 248, 0.2); }
+
+.wkmod-sets-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.6rem;
+    max-height: 130px;
+    overflow-y: auto;
+}
+.wkmod-set-block {
+    display: flex;
+    align-items: center;
+    gap: 0.28rem;
+    background: var(--bg-input);
+    border: 1px solid var(--bdr);
+    border-radius: var(--r1);
+    padding: 0.32rem 0.55rem;
+}
+.wkmod-set-label {
+    font-family: var(--ff-h);
+    font-size: 0.6rem;
+    color: var(--muted);
+    white-space: nowrap;
+}
+.wkmod-set-input {
+    width: 40px;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: var(--ff-h);
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    -moz-appearance: textfield;
+}
+.wkmod-set-input::-webkit-outer-spin-button,
+.wkmod-set-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.wkmod-set-input:focus { outline: none; }
+.wkmod-set-del {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 0.62rem;
+    padding: 2px 3px;
+    border-radius: 4px;
+    transition: color 0.15s;
+    line-height: 1;
+}
+.wkmod-set-del:hover { color: var(--coral); }
+
+/* ── Responsive ────────────────────────── */
+@media (max-width: 640px) {
+    .wkmod-grid-header,
+    .wkmod-grid-row {
+        grid-template-columns: repeat(5, 1fr) 36px;
+    }
+    .wkmod-grid-header .wkmod-grid-num,
+    .wkmod-grid-row    .wkmod-grid-num { display: none; }
+    .wkmod-row { grid-template-columns: 1fr; }
+}

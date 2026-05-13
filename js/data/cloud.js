@@ -229,7 +229,9 @@ export async function fetchPlans() {
         if (cursor) queries.push(Query.cursorAfter(cursor));
 
         const res = await databases.listDocuments(DATABASE_ID, PLANS_COL, queries);
-        results.push(...res.documents.map(d => JSON.parse(d.planData)));
+        results.push(...res.documents
+            .filter(d => !d.localId.startsWith('__'))
+            .map(d => JSON.parse(d.planData)));
         if (res.documents.length < 100) break;
         cursor = res.documents[res.documents.length - 1].$id;
     }
@@ -653,6 +655,50 @@ export async function saveBodySettings(settings) {
         );
     }
 }
+
+// ── Push-Up / Pull-Up history (stored as blobs in the plans collection) ────────
+
+const PUSHUP_HIST_ID = '__pu_hist__';
+const PULLUP_HIST_ID = '__pl_hist__';
+
+async function _fetchHistoryBlob(localId) {
+    const userId = await getUserId();
+    const res = await databases.listDocuments(DATABASE_ID, PLANS_COL, [
+        Query.equal('userId',  userId),
+        Query.equal('localId', localId),
+        Query.limit(1),
+    ]);
+    if (res.documents.length === 0) return null;
+    try { return JSON.parse(res.documents[0].planData); } catch { return null; }
+}
+
+async function _saveHistoryBlob(localId, history) {
+    const userId   = await getUserId();
+    const planData = JSON.stringify(history);
+    const res = await databases.listDocuments(DATABASE_ID, PLANS_COL, [
+        Query.equal('userId',  userId),
+        Query.equal('localId', localId),
+        Query.limit(1),
+    ]);
+    if (res.documents.length > 0) {
+        await databases.updateDocument(DATABASE_ID, PLANS_COL, res.documents[0].$id, { planData });
+    } else {
+        await databases.createDocument(
+            DATABASE_ID, PLANS_COL, ID.unique(),
+            { userId, localId, planData },
+            [
+                Permission.read(Role.user(userId)),
+                Permission.update(Role.user(userId)),
+                Permission.delete(Role.user(userId)),
+            ]
+        );
+    }
+}
+
+export async function fetchPushUpHistory()        { return _fetchHistoryBlob(PUSHUP_HIST_ID); }
+export async function savePushUpHistory(history)  { return _saveHistoryBlob(PUSHUP_HIST_ID, history); }
+export async function fetchPullUpHistory()        { return _fetchHistoryBlob(PULLUP_HIST_ID); }
+export async function savePullUpHistory(history)  { return _saveHistoryBlob(PULLUP_HIST_ID, history); }
 
 export function subscribeBodySettings(userId, onUpdate) {
     return client.subscribe(
