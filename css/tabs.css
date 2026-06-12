@@ -1,30 +1,33 @@
 /* ── Tab Navigation ─────────────────────── */
 .tab-nav {
     display: flex;
-    gap: 0.35rem;
-    background: var(--bg-card);
-    border: 1px solid var(--bdr);
+    gap: 0.25rem;
+    background: rgba(10, 10, 15, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: var(--r4);
-    padding: 0.35rem;
+    padding: 0.3rem;
     margin-bottom: 2.2rem;
     width: fit-content;
     margin-left: auto;
     margin-right: auto;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .tab-btn {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.6rem 1.6rem;
+    padding: 0.6rem 1.4rem;
     border-radius: var(--r4);
     font-family: var(--ff-h);
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     cursor: pointer;
-    border: none;
+    border: 1px solid transparent;
     background: transparent;
     color: var(--muted);
     transition: all var(--dur) var(--ease);
@@ -35,7 +38,7 @@
 
 .tab-btn:hover {
     color: var(--text);
-    background: rgba(167,139,250,0.08);
+    background: rgba(255, 255, 255, 0.04);
     transform: none;
     box-shadow: none;
     border-color: transparent;
@@ -43,8 +46,9 @@
 
 .tab-btn.active {
     background: linear-gradient(135deg, var(--violet), var(--coral));
+    border-color: rgba(255, 255, 255, 0.1);
     color: #fff;
-    box-shadow: 0 4px 16px rgba(167,139,250,0.3);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .tab-btn.active:hover {
@@ -54,32 +58,32 @@
 }
 
 .tab-btn.active.tab--cardio {
-    background: linear-gradient(135deg, #38bdf8, #34d399);
-    box-shadow: 0 4px 16px rgba(56,189,248,0.3);
+    background: linear-gradient(135deg, var(--sky), var(--mint));
+    box-shadow: 0 8px 20px rgba(14, 165, 233, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .tab-btn.active.tab--body {
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
-    color: #0d0b1a;
-    box-shadow: 0 4px 16px rgba(251,191,36,0.3);
+    background: linear-gradient(135deg, var(--amber), var(--coral));
+    color: #060608;
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .tab-btn.active.tab--metrics {
-    background: linear-gradient(135deg, #a78bfa, #38bdf8);
+    background: linear-gradient(135deg, var(--violet), var(--sky));
     color: #fff;
-    box-shadow: 0 4px 16px rgba(167,139,250,0.35);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .tab-btn.active.tab--workout {
-    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    background: linear-gradient(135deg, var(--amber), var(--rose));
     color: #fff;
-    box-shadow: 0 4px 16px rgba(245,158,11,0.32);
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .tab-btn.active.tab--system {
-    background: linear-gradient(135deg, #6366f1, #06b6d4);
+    background: linear-gradient(135deg, #4f46e5, var(--sky));
     color: #fff;
-    box-shadow: 0 4px 16px rgba(99,102,241,0.35);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 /* ── System Tab Background ───────────────────────────────────────────────── */
@@ -147,14 +151,20 @@
 
 .cardio-stat {
     background: var(--bg-card);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--bdr);
     border-radius: var(--r3);
     padding: 1.3rem 1rem;
     text-align: center;
-    transition: transform var(--dur) var(--spring), border-color var(--dur) var(--ease);
+    transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
-.cardio-stat:hover { transform: translateY(-4px); }
+.cardio-stat:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.15);
+}
 
 .cardio-stat--workouts { --cs-color: var(--violet); }
 .cardio-stat--distance { --cs-color: var(--sky); }
@@ -162,13 +172,16 @@
 .cardio-stat--calories { --cs-color: var(--coral); }
 .cardio-stat--avgcal   { --cs-color: var(--mint); }
 
-.cardio-stat:hover { border-color: var(--cs-color); box-shadow: 0 8px 24px color-mix(in srgb, var(--cs-color) 18%, transparent); }
+.cardio-stat:hover {
+    border-color: var(--cs-color);
+    box-shadow: 0 12px 30px color-mix(in srgb, var(--cs-color) 10%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
 
 .cs-label {
     font-family: var(--ff-h);
     font-size: 0.65rem;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.08em;
     color: var(--cs-color, var(--muted));
     margin-bottom: 0.5rem;
 }
@@ -200,6 +213,8 @@
 /* ── Burn Ring Card ────────────────── */
 .burn-card {
     background: var(--bg-card);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--bdr);
     border-radius: var(--r3);
     padding: 1.8rem 1.4rem;
@@ -207,6 +222,7 @@
     flex-direction: column;
     align-items: center;
     gap: 1rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .burn-ring-wrap {
@@ -308,12 +324,15 @@
 /* ── Heatmap Card ──────────────────── */
 .heatmap-card {
     background: var(--bg-card);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--bdr);
     border-radius: var(--r3);
     padding: 1.4rem 1.6rem;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .hm-card-header {
@@ -444,11 +463,14 @@
 /* ── Monthly Mini ──────────────────── */
 .monthly-mini {
     background: var(--bg-card);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--bdr);
     border-radius: var(--r3);
     padding: 1.4rem 1.4rem;
     display: flex;
     flex-direction: column;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .monthly-nav-row {
@@ -1569,7 +1591,7 @@
 }
 
 .pred-hero-label {
-    font-family: 'Roboto', sans-serif;
+    font-family: var(--ff-b);
     font-size: 0.85rem;
     font-weight: 400;
     color: var(--muted);
@@ -1589,7 +1611,7 @@
 }
 
 .pred-hero-subtext {
-    font-family: 'Roboto', sans-serif;
+    font-family: var(--ff-b);
     font-size: 0.8rem;
     color: var(--dimmed);
     font-weight: 400;
@@ -1611,7 +1633,7 @@
 }
 
 .pred-metric-label {
-    font-family: 'Roboto', sans-serif;
+    font-family: var(--ff-b);
     font-size: 0.8rem;
     font-weight: 500;
     color: var(--muted);
@@ -1642,7 +1664,7 @@
 }
 
 .pred-metric-sub {
-    font-family: 'Roboto', sans-serif;
+    font-family: var(--ff-b);
     font-size: 0.72rem;
     color: var(--dimmed);
     font-weight: 400;
@@ -1713,7 +1735,7 @@
 .pred-tl-val.green { color: var(--mint); }
 
 .pred-tl-sub {
-    font-family: 'Roboto', sans-serif;
+    font-family: var(--ff-b);
     font-size: 0.6rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;

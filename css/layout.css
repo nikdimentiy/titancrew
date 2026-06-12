@@ -9,35 +9,43 @@
 
 .time-pill {
     background: var(--bg-card);
-    border: 1px solid rgba(167, 139, 250, 0.28);
-    border-radius: var(--r4);
-    padding: 0.55rem 1.4rem;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--bdr);
+    border-radius: var(--r2);
+    padding: 0.65rem 1.4rem;
     text-align: center;
     min-width: 150px;
+    transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.time-pill:hover {
+    transform: translateY(-2px);
+    border-color: var(--bdr-focus);
 }
 
 .time-pill-label {
     font-family: var(--ff-h);
-    font-size: 0.62rem;
+    font-size: 0.65rem;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--violet);
-    margin-bottom: 0.15rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 0.2rem;
 }
 
 .time-pill-value {
     font-family: var(--ff-h);
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 700;
     color: var(--text);
-    letter-spacing: 0.04em;
+    letter-spacing: 0.02em;
 }
 
 /* ── Bento Grid ──────────────────────── */
 .bento {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.9rem;
+    gap: 1rem;
     margin-bottom: 2.2rem;
 }
 

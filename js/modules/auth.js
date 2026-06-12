@@ -121,25 +121,28 @@ function showConfirmModal({ title, badge, color, lines, onConfirm }) {
 
     wrap.innerHTML = `
 <div style="
-  background:linear-gradient(150deg,rgba(251,191,36,.08) 0%,#0d0b1a 60%);
-  border:1.5px solid ${c}44;border-radius:20px;
+  background:rgba(18, 18, 24, 0.85);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.08);border-radius:20px;
   width:min(440px,100%);overflow:hidden;position:relative;
   animation:scFadeIn .2s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 20px 50px rgba(0,0,0,0.5);
 ">
   <div style="position:absolute;top:0;left:0;right:0;height:2px;
     background:linear-gradient(90deg,transparent,${c} 40%,${c}88 60%,transparent);"></div>
 
   <div style="padding:1.6rem 1.8rem 1.2rem;">
     <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;">
-      <span style="font-family:'Oswald',sans-serif;font-size:1.1rem;font-weight:700;
-        letter-spacing:.12em;text-transform:uppercase;color:${c};">${title}</span>
-      ${badge ? `<span style="font-family:'Oswald',sans-serif;font-size:.52rem;letter-spacing:.14em;
+      <span style="font-family:'Outfit',sans-serif;font-size:1.1rem;font-weight:700;
+        letter-spacing:.08em;text-transform:uppercase;color:${c};">${title}</span>
+      ${badge ? `<span style="font-family:'Outfit',sans-serif;font-size:.52rem;letter-spacing:.1em;
         text-transform:uppercase;padding:.18rem .55rem;border-radius:99px;
         background:${c}18;border:1px solid ${c}44;color:${c};">${badge}</span>` : ''}
     </div>
     <div style="display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.5rem;">
       ${lines.map(l => `
-        <div style="display:flex;align-items:flex-start;gap:.6rem;font-size:.84rem;color:#ede9ff;line-height:1.4;">
+        <div style="display:flex;align-items:flex-start;gap:.6rem;font-size:.84rem;color:#fafafa;line-height:1.4;">
           <span style="color:${c};margin-top:1px;flex-shrink:0;">•</span>${l}
         </div>`).join('')}
     </div>
@@ -148,16 +151,16 @@ function showConfirmModal({ title, badge, color, lines, onConfirm }) {
   <div style="display:flex;gap:.7rem;padding:0 1.8rem 1.6rem;">
     <button id="_tc-cancel" style="
       flex:1;padding:.72rem 1rem;border-radius:10px;
-      border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);
-      color:#8883a8;font-family:'Oswald',sans-serif;font-size:.78rem;font-weight:600;
-      letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;">
+      border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);
+      color:#a1a1aa;font-family:'Outfit',sans-serif;font-size:.78rem;font-weight:600;
+      letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;">
       Cancel
     </button>
     <button id="_tc-ok" style="
       flex:1;padding:.72rem 1rem;border-radius:10px;
-      border:1.5px solid ${c}66;background:${c}18;
-      color:${c};font-family:'Oswald',sans-serif;font-size:.78rem;font-weight:600;
-      letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;">
+      border:1px solid ${c}66;background:${c}18;
+      color:${c};font-family:'Outfit',sans-serif;font-size:.78rem;font-weight:600;
+      letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;">
       Confirm →
     </button>
   </div>

@@ -691,18 +691,18 @@ function renderBFChart() {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: '#16132a',
-                    titleColor: '#8883a8',
-                    bodyColor: '#a78bfa',
-                    borderColor: 'rgba(167,139,250,0.1)',
+                    backgroundColor: 'rgba(18, 18, 24, 0.95)',
+                    titleColor: '#a1a1aa',
+                    bodyColor: '#8b5cf6',
+                    borderColor: 'rgba(255,255,255,0.08)',
                     borderWidth: 1,
                     padding: 8,
                     displayColors: false,
                 },
             },
             scales: {
-                y: { grid: { color: 'rgba(167,139,250,0.06)' }, ticks: { color: '#8883a8', font: { family: 'Roboto', size: 10 } }, border: { color: 'rgba(167,139,250,0.1)' } },
-                x: { grid: { display: false }, ticks: { color: '#8883a8', font: { family: 'Roboto', size: 10 } }, border: { color: 'rgba(167,139,250,0.1)' } },
+                y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#a1a1aa', font: { family: 'Inter', size: 10 } }, border: { color: 'rgba(255,255,255,0.06)' } },
+                x: { grid: { display: false }, ticks: { color: '#a1a1aa', font: { family: 'Inter', size: 10 } }, border: { color: 'rgba(255,255,255,0.06)' } },
             },
         },
     });

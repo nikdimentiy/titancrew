@@ -10,9 +10,12 @@ body {
     color: var(--text);
     min-height: 100vh;
     padding: 1.5rem;
-    background-image: radial-gradient(circle, rgba(167,139,250,0.055) 1px, transparent 1px);
-    background-size: 26px 26px;
+    background-image: 
+        radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.06) 0%, transparent 60%),
+        radial-gradient(circle, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 24px 24px;
     isolation: isolate;
+    overflow-x: hidden;
 }
 
 .page-wrap {
@@ -23,71 +26,54 @@ body {
 /* ── Hero ─────────────────────────── */
 .hero {
     text-align: center;
-    padding: 2.5rem 1rem 1.5rem;
+    padding: 3rem 1rem 2rem;
 }
 
 /* ── Hero glory icon ─────────────────── */
 .hero-icon-wrap {
     position: relative;
     display: inline-block;
-    width: 88px;
-    height: 88px;
-    margin-bottom: 1.1rem;
-    animation: float 4s ease-in-out infinite;
+    width: 80px;
+    height: 80px;
+    margin-bottom: 1.2rem;
+    animation: float 5s ease-in-out infinite;
 }
 
-/* Rotating conic-gradient rays */
+/* Conic gradient rays - subtle, high-end glow */
 .hg-rays {
     position: absolute;
-    inset: -48px;
+    inset: -30px;
     border-radius: 50%;
     background: conic-gradient(
         from 0deg,
         transparent  0deg,
-        rgba(167,139,250,0.30) 10deg,
-        transparent  22deg,
-        transparent  42deg,
-        rgba(255,107,157,0.24) 52deg,
-        transparent  64deg,
-        transparent  84deg,
-        rgba(167,139,250,0.26)  94deg,
-        transparent 106deg,
-        transparent 126deg,
-        rgba(56,189,248,0.20)  136deg,
-        transparent 148deg,
-        transparent 168deg,
-        rgba(255,107,157,0.22) 178deg,
-        transparent 190deg,
-        transparent 210deg,
-        rgba(167,139,250,0.24) 220deg,
-        transparent 232deg,
-        transparent 252deg,
-        rgba(56,189,248,0.18)  262deg,
-        transparent 274deg,
-        transparent 294deg,
-        rgba(255,107,157,0.20) 304deg,
-        transparent 316deg,
-        transparent 336deg,
-        rgba(167,139,250,0.22) 346deg,
-        transparent 360deg
+        rgba(139, 92, 246, 0.15) 20deg,
+        transparent  40deg,
+        transparent  140deg,
+        rgba(255, 69, 117, 0.12) 160deg,
+        transparent  180deg,
+        transparent  280deg,
+        rgba(14, 165, 233, 0.12) 300deg,
+        transparent  320deg,
+        transparent  360deg
     );
-    filter: blur(3px);
-    animation: hg-spin 14s linear infinite;
+    filter: blur(8px);
+    animation: hg-spin 25s linear infinite;
     pointer-events: none;
 }
 
 /* Soft radial glow behind the image */
 .hg-glow {
     position: absolute;
-    inset: -28px;
+    inset: -20px;
     border-radius: 50%;
     background: radial-gradient(circle,
-        rgba(167,139,250,0.55) 0%,
-        rgba(255,107,157,0.25) 40%,
-        transparent 70%
+        rgba(139, 92, 246, 0.35) 0%,
+        rgba(255, 69, 117, 0.15) 50%,
+        transparent 75%
     );
-    filter: blur(18px);
-    animation: hg-glow-pulse 3s ease-in-out infinite alternate;
+    filter: blur(12px);
+    animation: hg-glow-pulse 4s ease-in-out infinite alternate;
     pointer-events: none;
 }
 
@@ -95,9 +81,9 @@ body {
 .hg-ring {
     position: absolute;
     top: 50%; left: 50%;
-    width: 88px; height: 88px;
+    width: 80px; height: 80px;
     border-radius: 50%;
-    border: 1.5px solid transparent;
+    border: 1px solid transparent;
     transform: translate(-50%, -50%) scale(1);
     animation: hg-ring-out ease-out infinite;
     pointer-events: none;
@@ -105,35 +91,36 @@ body {
 }
 
 .hg-ring--1 {
-    border-color: rgba(167,139,250,0.65);
-    animation-duration: 3.2s;
+    border-color: rgba(139, 92, 246, 0.4);
+    animation-duration: 3.6s;
 }
 .hg-ring--2 {
-    border-color: rgba(255,107,157,0.50);
-    animation-duration: 3.2s;
-    animation-delay: -1.07s;
+    border-color: rgba(255, 69, 117, 0.3);
+    animation-duration: 3.6s;
+    animation-delay: -1.2s;
 }
 .hg-ring--3 {
-    border-color: rgba(56,189,248,0.40);
-    animation-duration: 3.2s;
-    animation-delay: -2.13s;
+    border-color: rgba(14, 165, 233, 0.25);
+    animation-duration: 3.6s;
+    animation-delay: -2.4s;
 }
 
 /* The actual favicon image */
 .hero-favicon {
     position: relative;
     z-index: 1;
-    width: 88px;
-    height: 88px;
-    border-radius: 20px;
+    width: 80px;
+    height: 80px;
+    border-radius: var(--r3);
     display: block;
-    filter: drop-shadow(0 0 12px rgba(167,139,250,0.55))
-            drop-shadow(0 0 28px rgba(255,107,157,0.25));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+    background-color: #0b0b0f;
 }
 
 @keyframes float {
     0%, 100% { transform: translateY(0px); }
-    50%       { transform: translateY(-9px); }
+    50%       { transform: translateY(-8px); }
 }
 
 @keyframes hg-spin {
@@ -142,51 +129,54 @@ body {
 }
 
 @keyframes hg-glow-pulse {
-    from { opacity: 0.65; transform: scale(0.92); }
-    to   { opacity: 1;    transform: scale(1.12); }
+    from { opacity: 0.6; transform: scale(0.95); }
+    to   { opacity: 1;    transform: scale(1.08); }
 }
 
 @keyframes hg-ring-out {
-    0%   { opacity: 0.85; transform: translate(-50%, -50%) scale(1);   }
-    100% { opacity: 0;    transform: translate(-50%, -50%) scale(2.6); }
+    0%   { opacity: 0.6; transform: translate(-50%, -50%) scale(1);   }
+    100% { opacity: 0;    transform: translate(-50%, -50%) scale(2.4); }
 }
 
 h1 {
     font-family: var(--ff-h);
-    font-size: clamp(2rem, 5vw, 3.8rem);
+    font-size: clamp(2.2rem, 6vw, 4.2rem);
     text-transform: uppercase;
-    letter-spacing: 0.18em;
-    background: linear-gradient(135deg, var(--coral) 0%, var(--violet) 100%);
+    letter-spacing: 0.12em;
+    background: linear-gradient(135deg, var(--text) 30%, var(--violet) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
     line-height: 1.1;
+    font-weight: 800;
 }
 
 .tagline {
     color: var(--muted);
-    font-style: italic;
     font-size: 0.95rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
 }
 
 h2 {
     font-family: var(--ff-h);
-    font-size: 1.3rem;
+    font-size: 1.25rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.08em;
     color: var(--violet);
     margin-bottom: 0;
 }
 
 label {
     font-family: var(--ff-h);
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--violet);
+    letter-spacing: 0.08em;
+    color: var(--muted);
     display: block;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.4rem;
 }
 
 select,
@@ -194,9 +184,9 @@ input[type="date"],
 input[type="number"],
 input[type="text"] {
     width: 100%;
-    padding: 0.6rem 0.9rem;
+    padding: 0.65rem 0.95rem;
     background: var(--bg-input);
-    border: 1.5px solid var(--bdr);
+    border: 1px solid var(--bdr);
     border-radius: var(--r2);
     color: var(--text);
     font-family: var(--ff-b);
@@ -210,30 +200,30 @@ select:focus,
 input:focus {
     outline: none;
     border-color: var(--bdr-focus);
-    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.12);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
 }
 
 .empty-state {
     text-align: center;
     color: var(--muted);
-    padding: 2.5rem;
-    font-style: italic;
+    padding: 3rem;
     font-size: 0.9rem;
+    letter-spacing: 0.01em;
 }
 
 @media (max-width: 640px) {
-    body { padding: 0.9rem; }
-    h1   { letter-spacing: 0.1em; }
+    body { padding: 1rem; }
+    h1   { letter-spacing: 0.08em; }
 }
 
-/* ── Geometric gradient background ─────────────────── */
+/* ── Geometric spotlight background ─────────────────── */
 #geoBg {
     position: fixed;
     inset: 0;
     pointer-events: none;
     z-index: -1;
     opacity: 0;
-    transition: opacity 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 1.5s var(--ease);
     overflow: hidden;
 }
 
@@ -241,101 +231,88 @@ input:focus {
 
 .geo-shape { position: absolute; pointer-events: none; }
 
-/* Upper-left violet triangle */
+/* Upper-left violet spotlight */
 .geo-shape--1 {
-    width: 72vw;
-    height: 70vh;
-    top: 0; left: 0;
-    clip-path: polygon(0 0, 88% 0, 0 100%);
-    background: linear-gradient(148deg,
-        rgba(167, 139, 250, 0.13) 0%,
-        rgba(167, 139, 250, 0.04) 52%,
-        transparent 100%);
-    animation: geoPulse 22s ease-in-out infinite;
+    width: 60vw;
+    height: 60vh;
+    top: -10%; left: -10%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
+    filter: blur(100px);
+    animation: geoPulse 20s ease-in-out infinite;
 }
 
-/* Lower-right coral triangle */
+/* Lower-right coral spotlight */
 .geo-shape--2 {
-    width: 62vw;
-    height: 58vh;
-    bottom: 0; right: 0;
-    clip-path: polygon(100% 0, 100% 100%, 8% 100%);
-    background: linear-gradient(320deg,
-        rgba(255, 107, 157, 0.11) 0%,
-        rgba(255, 107, 157, 0.03) 58%,
-        transparent 100%);
-    animation: geoPulse 28s ease-in-out infinite reverse;
+    width: 50vw;
+    height: 50vh;
+    bottom: -10%; right: -10%;
+    background: radial-gradient(circle, rgba(255, 69, 117, 0.06) 0%, transparent 70%);
+    filter: blur(100px);
+    animation: geoPulse 25s ease-in-out infinite reverse;
 }
 
-/* Sky-blue diamond, left-center */
+/* Sky-blue spotlight left-center */
 .geo-shape--3 {
-    width: 48vmin;
-    height: 48vmin;
-    top: 28%; left: -6%;
-    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-    background: radial-gradient(circle at 58% 42%,
-        rgba(56, 189, 248, 0.10) 0%,
-        rgba(56, 189, 248, 0.03) 55%,
-        transparent 100%);
-    animation: geoDrift 34s ease-in-out infinite;
+    width: 40vw;
+    height: 40vh;
+    top: 30%; left: -5%;
+    background: radial-gradient(circle, rgba(14, 165, 233, 0.05) 0%, transparent 70%);
+    filter: blur(80px);
+    animation: geoDrift 30s ease-in-out infinite;
 }
 
-/* Violet-coral pentagon, upper-right */
+/* Amber spotlight upper-right */
 .geo-shape--4 {
-    width: 52vmin;
-    height: 52vmin;
-    top: 4%; right: 3%;
-    clip-path: polygon(50% 0%, 94% 22%, 78% 84%, 22% 84%, 6% 22%);
-    background: radial-gradient(ellipse at 42% 38%,
-        rgba(167, 139, 250, 0.10) 0%,
-        rgba(255, 107, 157, 0.05) 50%,
-        transparent 100%);
-    animation: geoPulse 38s ease-in-out infinite 7s;
+    width: 45vw;
+    height: 45vh;
+    top: 5%; right: -5%;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.04) 0%, transparent 70%);
+    filter: blur(90px);
+    animation: geoPulse 35s ease-in-out infinite 5s;
 }
 
-/* Amber wedge, lower-left */
+/* Subtle violet spotlight lower-left */
 .geo-shape--5 {
-    width: 42vw;
-    height: 38vh;
-    bottom: 3%; left: 4%;
-    clip-path: polygon(0 55%, 60% 100%, 0 100%);
-    background: linear-gradient(55deg,
-        rgba(251, 191, 36, 0.08) 0%,
-        transparent 72%);
-    animation: geoDrift 26s ease-in-out infinite 4s reverse;
+    width: 35vw;
+    height: 35vh;
+    bottom: 5%; left: 10%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.04) 0%, transparent 70%);
+    filter: blur(80px);
+    animation: geoDrift 24s ease-in-out infinite reverse;
 }
 
-/* Atmospheric conic mesh overlay */
+/* Atmospheric mesh glow overlay */
 .geo-shape--6 {
     inset: 0;
     position: absolute;
     background:
-        radial-gradient(ellipse 90% 70% at 50% 50%,
-            rgba(167, 139, 250, 0.04) 0%,
-            transparent 65%),
-        conic-gradient(from 15deg at 50% 50%,
+        radial-gradient(ellipse 80% 60% at 50% 50%,
+            rgba(139, 92, 246, 0.02) 0%,
+            transparent 60%),
+        conic-gradient(from 0deg at 50% 50%,
             transparent 0deg,
-            rgba(167, 139, 250, 0.03) 55deg,
-            transparent 110deg,
-            rgba(255, 107, 157, 0.02) 175deg,
-            transparent 230deg,
-            rgba(56, 189, 248, 0.02) 300deg,
+            rgba(139, 92, 246, 0.02) 60deg,
+            transparent 120deg,
+            rgba(255, 69, 117, 0.01) 180deg,
+            transparent 240deg,
+            rgba(14, 165, 233, 0.01) 300deg,
             transparent 360deg);
-    animation: geoSpin 120s linear infinite;
+    animation: geoSpin 150s linear infinite;
 }
 
 @keyframes geoPulse {
     0%, 100% { transform: scale(1)    translate(0px,   0px); }
-    35%       { transform: scale(1.06) translate(10px, -6px); }
-    70%       { transform: scale(0.97) translate(-6px,  9px); }
+    35%       { transform: scale(1.08) translate(15px, -10px); }
+    70%       { transform: scale(0.95) translate(-10px,  15px); }
 }
 
 @keyframes geoDrift {
     0%, 100% { transform: translate(0px,  0px) rotate(0deg); }
-    50%       { transform: translate(18px,-14px) rotate(9deg); }
+    50%       { transform: translate(25px,-20px) rotate(8deg); }
 }
 
 @keyframes geoSpin {
     from { transform: rotate(0deg); }
     to   { transform: rotate(360deg); }
 }
+

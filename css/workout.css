@@ -31,6 +31,8 @@
 /* ── Header Bar ─────────────────────────── */
 .wk-header-bar {
     background: var(--bg-card);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--bdr);
     border-radius: var(--r3);
     padding: 1.1rem 1.6rem;
@@ -43,6 +45,7 @@
     position: relative;
     z-index: 1;
     overflow: hidden;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 .wk-header-bar::before {
     content: '';
@@ -177,10 +180,13 @@
 /* ── Exercise Card ────────────────────── */
 .wk-exercise {
     background: var(--bg-card);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--bdr);
     border-radius: var(--r3);
     padding: 1.15rem 1.4rem;
-    transition: border-color 0.3s, background 0.3s;
+    transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .wk-exercise--done {
@@ -534,9 +540,12 @@
 
 .wkmod {
     background: var(--bg-card);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--bdr);
     border-radius: var(--r3);
     overflow: hidden;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 /* ── Header ────────────────────────────── */

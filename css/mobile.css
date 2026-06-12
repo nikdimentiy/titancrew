@@ -16,13 +16,13 @@
     align-items: stretch;
     justify-content: space-around;
 
-    background: rgba(13, 11, 26, 0.82);
-    backdrop-filter: blur(28px) saturate(1.5);
-    -webkit-backdrop-filter: blur(28px) saturate(1.5);
-    border-top: 1px solid rgba(167, 139, 250, 0.14);
+    background: rgba(10, 10, 15, 0.75);
+    backdrop-filter: blur(20px) saturate(1.5);
+    -webkit-backdrop-filter: blur(20px) saturate(1.5);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
     box-shadow:
-        0 -2px 24px rgba(0, 0, 0, 0.55),
-        inset 0 1px 0 rgba(167, 139, 250, 0.07);
+        0 -4px 30px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
 
     /* top padding + safe-area for phones with home indicator */
     padding: 0.28rem 0.15rem;
@@ -40,8 +40,8 @@
     background: linear-gradient(
         90deg,
         transparent,
-        rgba(167, 139, 250, 0.38) 30%,
-        rgba(255, 107, 157, 0.22) 60%,
+        rgba(139, 92, 246, 0.25) 30%,
+        rgba(255, 69, 117, 0.15) 60%,
         transparent
     );
     pointer-events: none;
